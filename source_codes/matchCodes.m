@@ -44,3 +44,5 @@ end
 %  kernel independently, and select the minimum value over all shifts
 %  compensating the eye rotation
 scoreC = min(mean(scoreC));
+
+/* Commentaire lucas */
