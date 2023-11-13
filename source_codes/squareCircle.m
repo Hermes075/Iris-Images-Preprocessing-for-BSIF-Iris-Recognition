@@ -1,7 +1,8 @@
 % Rivière Lucas & Arthur Rubio - Code to square a circle - 13/11/2023
 
 pkg load image;
-load('extractIris.m');
+extractIris;
+image_originale = rgb2gray(iris_extrait);
 
 %On redéfinit les rayons de l'oeil
 rint = r_int % Rayon intérieur (frontière pupille/iris)
