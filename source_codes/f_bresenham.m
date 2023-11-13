@@ -1,6 +1,6 @@
 % Arthur Rubio & Lucas Rivière - Bresenham algorithm - 13/11/2023
 
-function [x, y] = bresenham(x1, y1, x2, y2)
+function [x, y] = f_bresenham(x1, y1, x2, y2)
 % Bresenham line algorithm
 % Inputs:
 %   x1, y1 - Les coordonnées du premier point de la ligne

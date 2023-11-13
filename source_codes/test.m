@@ -51,8 +51,8 @@ Icol = sqrt(0.5*(Ix2 + Iy2 + sqrt((Ix2 - Iy2).^2 + (2*IxIy).^2))) ;
 % Normalisation
 Icol_n = f_normalisation(Icol) ;
 
-% Seuillage
-Icol_bin = Icol_n > 0.5 ;
+% Seuillage idéal: 0.3
+Icol_bin = Icol_n > 0.3 ;
 
 %figure, imagesc(Icol_bin), colormap(gray), title('contour iris') ;
 
