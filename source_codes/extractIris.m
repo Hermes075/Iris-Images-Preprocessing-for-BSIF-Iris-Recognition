@@ -173,7 +173,7 @@ Iy2 = Ry.^2 + Vy.^2 + By.^2 ;
 imcol = sqrt(0.5*(Ix2 + Iy2 + sqrt((Ix2 - Iy2).^2 + (2*IxIy).^2))) ;
 
 %figure, imagesc(imcol), colormap(gray), title('contour iris') ;
-imcol = f_no
-im_bin = imcol>0.8 ;
+imcol = f_normalisation(imcol) ;
+im_bin = imcol > 0.8 ;
 
 figure, imagesc(im_bin), colormap(gray), title('contour iris') ;
