@@ -19,6 +19,7 @@ centre_x = centre_oeil_x % Coordonnée x du centre de l'œil
 centre_y = centre_oeil_y % Coordonnée y du centre de l'œil
 
 %On initialise le vecteur
+% Corriger 2*pi
 theta = linspace(0, 2*pi, longueur_rectangle);
 
 %On génère les coordonnées
