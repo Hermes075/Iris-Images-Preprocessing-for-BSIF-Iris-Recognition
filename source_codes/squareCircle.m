@@ -1,6 +1,11 @@
 % Rivière Lucas & Arthur Rubio - Code to square a circle - 13/11/2023
 
-rint = ... % Rayon intérieur (frontière pupille/iris)
+pkg load image;
+load('extractIris.m');
+
+%On redéfinit les rayons de l'oeil
+rint = r_int % Rayon intérieur (frontière pupille/iris)
+rext = r_ext % Rayon extérieur (frontière iris/sclère)
 longueur_rectangle = round(2 * pi * rint);
 
 %Créations des différentes listes de coordonnées
@@ -10,10 +15,8 @@ x2 = zeros(1, longueur_rectangle);
 y2 = zeros(1, longueur_rectangle);
 
 %Spécification des coordonnées des points de la pupille
-centre_x = ... % Coordonnée x du centre de l'œil
-centre_y = ... % Coordonnée y du centre de l'œil
-rext = ... % Rayon extérieur
-rint = ... % Rayon intérieur (déjà défini)
+centre_x = centre_oeil_x % Coordonnée x du centre de l'œil
+centre_y = centre_oeil_y % Coordonnée y du centre de l'œil
 
 %On initialise le vecteur
 theta = linspace(0, 2*pi, longueur_rectangle);

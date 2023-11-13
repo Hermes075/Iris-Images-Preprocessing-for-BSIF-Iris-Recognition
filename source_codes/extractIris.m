@@ -51,12 +51,14 @@ s=size(Icol_bin) ;
 
 x_milieu = round(s(1)/2) ;
 y_milieu = round(s(2)/2) ;
+centre_oeil_x = round(s(1)/2) ;
+centre_oeil_y = round(s(2)/2) ;
 pixel_int_g = 0 ;
 pixel_int_d = 0 ;
 pixel_ext_g = 0 ;
 pixel_ext_d = 0 ;
 
-% Calcul des bornes intérieures
+% Calcul des bornes intérieures horizontales
 for j = y_milieu:-1:1
   if Icol_bin(x_milieu,j) == 1
     pixel_int_g = j ;
@@ -71,11 +73,29 @@ for j = y_milieu:1:s(2)
   endif
 end
 
+% Calcul des bornes intérieures verticales
+for i = x_milieu:-1:1
+  if Icol_bin(i, y_milieu) == 1
+    pixel_sup = i;
+    break;
+  end
+end
+
+for i = x_milieu:1:s(1)
+  if Icol_bin(i, y_milieu) == 1
+    pixel_inf = i;
+    break;
+  end
+end
+
 %Diamètre intérieur de l'iris
 diam_int = pixel_int_d - pixel_int_g ;
 
-% Calcul des bornes extérieures
+% Calcul du nouveau centre de l'oeil
+centre_oeil_x = (pixel_int_g + pixel_int_d) / 2;
+centre_oeil_y = (pixel_sup + pixel_inf) / 2;
 
+% Calcul des bornes extérieures horizontales
 for j = 1:s(2)
   if Icol_bin(x_milieu,j) == 1
     pixel_ext_g = j ;
