@@ -38,5 +38,3 @@ disp(['genuine comparison score = ' num2str(scoreG)])
 % Impostor:
 scoreI = matchCodes(codes(:,:,:,2),codes(:,:,:,3),masks(:,:,2),masks(:,:,3),l);
 disp(['impostor comparison score = ' num2str(scoreI)])
-
-/* Commentaire Arthur */
