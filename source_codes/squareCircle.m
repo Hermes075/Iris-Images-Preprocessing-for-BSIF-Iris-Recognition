@@ -34,8 +34,12 @@ end
 %On détermine les "lignes" du rectangle
 image_rect = zeros(rext - rint, longueur_rectangle);
 for i = 1:longueur_rectangle
-    [ligne_x, ligne_y] = f_bresenham(x1(i), y1(i), x2(i), y2(i)); % Utilisation de l'algorithme de Bresenham
-    ligne_pixels = interp2(image_originale, ligne_x, ligne_y, 'linear');
+    numPoints = 100;  % Define the number of points for interpolation
+    % Adjusting the number of points to match the height of image_rect
+    numPoints = rext - rint;
+    x_line = linspace(x1(i), x2(i), numPoints);
+    y_line = linspace(y1(i), y2(i), numPoints);
+    ligne_pixels = interp2(image_originale, x_line, y_line, 'linear');
     image_rect(:, i) = ligne_pixels;
 end
 
