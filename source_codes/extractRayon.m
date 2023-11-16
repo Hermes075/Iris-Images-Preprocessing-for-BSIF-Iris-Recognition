@@ -38,7 +38,6 @@ Ix2 = Rx.^2 + Gx.^2 + Bx.^2 ;
 IxIy = Rx.*Ry + Gx.*Gy + Bx.*By ;
 Iy2 = Ry.^2 + Gy.^2 + By.^2 ;
 
-
 % Creation des contours
 Icol = sqrt(0.5*(Ix2 + Iy2 + sqrt((Ix2 - Iy2).^2 + (2*IxIy).^2))) ;
 

@@ -7,7 +7,6 @@ pkg load image;
 extractIris;
 %image_originale = rgb2gray(iris_extrait);
 
-
 %On redefinit les rayons de l'oeil
 rint = r_int ;  % Rayon interieur (frontiere pupille/iris)
 rext = r_ext ; % Rayon exterieur (frontiere iris/sclere)
@@ -24,9 +23,7 @@ y2 = zeros(1, longueur_rectangle);
 centre_x = centre_oeil_x % Coordonnee x du centre de l'œil
 centre_y = centre_oeil_y % Coordonnee y du centre de l'œil
 
-
 %On initialise le vecteur
-
 theta = linspace(0, 2*pi, longueur_rectangle);
 
 %On genere les coordonnees des points peripheriques interieurs et exterieurs
@@ -54,7 +51,6 @@ figure, imagesc(image_rect, []), colormap(gray), title('Iris deroule') ;
 
 imwrite(image_rect, cheminAcces, 'bmp') ;
 
-
 % Creation du masque
 s=size(image_rect) ;
 mask = zeros(s(1),s(2));
@@ -74,6 +70,5 @@ nomMask = [nomSansExtension '_mask'];
 dossierStockage = 'Masks_bmp' ;
 nomFichierConverti = [nomMask '.bmp'] ;
 cheminAcces = ['Masks_bmp/' nomMask '.bmp'] ;
-
 
 imwrite(mask, cheminAcces, 'bmp') ;

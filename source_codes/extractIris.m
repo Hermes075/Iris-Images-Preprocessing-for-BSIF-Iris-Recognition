@@ -47,7 +47,7 @@ for i = 1:s(1)
   end
 end
 
-figure, imshow(filtre), title('Filtre utilisé') ;
+figure, imshow(filtre), title('Filtre utilise') ;
 
 I_double = im2double(im_rognee) ;
 
