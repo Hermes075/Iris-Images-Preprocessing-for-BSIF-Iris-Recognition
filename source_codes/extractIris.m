@@ -1,13 +1,13 @@
-% Rivière Lucas & Arthur Rubio - extractIris - 09/11/2023
+% Riviere Lucas & Arthur Rubio - extractIris - 09/11/2023
 
 % Fichier permettant l'isolation de l'iris
 
-clc;                  %Nettoyage de la fenêtre de commandes
-clear all;           %Suppression des variables
+clc;                  %Nettoyage de la fenetre de commandes
+clear all;            %Suppression des variables
 close all;            %Fermeture de toutes les figures
 pkg load image ;
 
-% Préparation d'un dossier de stockage des images traitées
+% Preparation d'un dossier de stockage des images traitees
 nomImage = 'Images/test_iris2.jpg' ;
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 dossierStockage = 'Images_bmp' ;
@@ -21,9 +21,7 @@ I = im2double(I) ;
 
 figure, imshow(I), title('Image originale') ;
 
-
 % Rognage de l'image
-
 cote = 2*r_ext + 8 ;             % Marge de 4 pixels de chaque cote
 x_min = centre_oeil_x - cote/2 ;
 x_max = centre_oeil_x + cote/2 ;
@@ -37,7 +35,7 @@ figure,imshow(im_rognee),title('im rognee');
 % On refait les calculs mais cette fois sur l'image rognee
 [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(im_rognee) ;
 
-% Création d'un filtre pour extraire l'anneau
+% Creation d'un filtre pour extraire l'anneau
 s = size(im_rognee) ;
 filtre = zeros(s(1),s(2)) ;
 x_milieu = round(s(1)/2);
@@ -55,6 +53,5 @@ I_double = im2double(im_rognee) ;
 
 % Extraction de l'iris
 iris_extrait = I_double.*filtre ;
-
 
 figure, imagesc(iris_extrait) , title('la bonne image') ;

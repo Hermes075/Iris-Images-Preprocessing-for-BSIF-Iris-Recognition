@@ -1,4 +1,4 @@
-% Rivière Lucas & Arthur Rubio - Code to square a circle - 13/11/2023
+% Riviere Lucas & Arthur Rubio - Code to square a circle - 13/11/2023
 
 clc;                  %Nettoyage de la fenêtre de commandes
 clear all;           %Suppression des variables
@@ -8,28 +8,28 @@ extractIris;
 %image_originale = rgb2gray(iris_extrait);
 
 
-%On redéfinit les rayons de l'oeil
-rint = r_int ;  % Rayon intérieur (frontière pupille/iris)
-rext = r_ext ; % Rayon extérieur (frontière iris/sclère)
+%On redefinit les rayons de l'oeil
+rint = r_int ;  % Rayon interieur (frontiere pupille/iris)
+rext = r_ext ; % Rayon exterieur (frontiere iris/sclere)
 
 longueur_rectangle = round(2 * pi * rint);
 
-%Créations des différentes listes de coordonnées
+%Creations des differentes listes de coordonnees
 x1 = zeros(1, longueur_rectangle);
 y1 = zeros(1, longueur_rectangle);
 x2 = zeros(1, longueur_rectangle);
 y2 = zeros(1, longueur_rectangle);
 
-%Spécification des coordonnées des points de la pupille
-centre_x = centre_oeil_x % Coordonnée x du centre de l'œil
-centre_y = centre_oeil_y % Coordonnée y du centre de l'œil
+%Specification des coordonnees des points de la pupille
+centre_x = centre_oeil_x % Coordonnee x du centre de l'œil
+centre_y = centre_oeil_y % Coordonnee y du centre de l'œil
 
 
 %On initialise le vecteur
 
 theta = linspace(0, 2*pi, longueur_rectangle);
 
-%On génère les coordonnées des points périphériques intérieurs et extérieurs
+%On genere les coordonnees des points peripheriques interieurs et exterieurs
 for i = 1:longueur_rectangle
     x1(i) = centre_x + rint * cos(theta(i));
     y1(i) = centre_y + rint * sin(theta(i));
@@ -37,8 +37,8 @@ for i = 1:longueur_rectangle
     y2(i) = centre_y + rext * sin(theta(i));
 end
 
-%étermination des "lignes" du rectangle
-% les "lignes" du rectangle
+% Determination des "lignes" du rectangle
+% Les "lignes" du rectangle
 image_rect = zeros(rext - rint, longueur_rectangle);
 
 for i = 1:longueur_rectangle
@@ -50,12 +50,12 @@ for i = 1:longueur_rectangle
 end
 
 %Affichage de l'image
-figure, imagesc(image_rect, []), colormap(gray), title('Iris déroulé') ;
+figure, imagesc(image_rect, []), colormap(gray), title('Iris deroule') ;
 
 imwrite(image_rect, cheminAcces, 'bmp') ;
 
 
-% Création du masque
+% Creation du masque
 s=size(image_rect) ;
 mask = zeros(s(1),s(2));
 
