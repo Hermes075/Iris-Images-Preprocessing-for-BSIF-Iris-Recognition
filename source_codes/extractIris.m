@@ -1,4 +1,4 @@
-% Rivière Lucas & Arthur - extractIris - 09/11/2023
+% Rivière Lucas & Arthur Rubio - extractIris - 09/11/2023
 
 % Fichier permettant l'isolation de l'iris
 
