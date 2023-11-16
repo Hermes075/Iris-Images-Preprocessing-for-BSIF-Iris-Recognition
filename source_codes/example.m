@@ -17,7 +17,7 @@
 clear all
 
 %% Load the selected domain-specific filter set
-l = 15;     % size of the filer
+l = 15;     % size of the filter
 n = 7;      % number of kernels in a set
 filters = ['../iris_sourced_filters/new_bsif_filters_based_on_eyetracker_data/ICAtextureFilters_' num2str(l) 'x' num2str(l) '_' num2str(n) 'bit.mat'];
 load(filters);
