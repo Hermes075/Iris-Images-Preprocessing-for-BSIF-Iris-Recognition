@@ -1,4 +1,13 @@
-% Rivière Lucas - f_centre - 15/11/2023
+% Arthur Rubio, Lucas Riviere, 11/2023
+% "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
+% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2023, Paris, France.
+%
+% Finds the iris center in an image by detecting peripheral points and calculating iris diameters 
+% in horizontal and vertical directions. It returns the coordinates and diameter of the iris center. 
+% Specifically designed for squareCircle.m compatibility.
+%
+% Input: image I
+% Output: coordinates x0,y0 of the iris center and diameter diam
 
 function [x0,y0,diam] = f_centre(I)
 
@@ -60,4 +69,3 @@ while abs(diam_horizontal - diam_vertical) > e
   endwhile
 
 diam = diam_horizontal ;
-

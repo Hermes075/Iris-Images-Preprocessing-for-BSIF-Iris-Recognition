@@ -1,30 +1,42 @@
-% Rivière Lucas - extractIris - 09/11/2023
+% Arthur Rubio, Lucas Riviere, 11/2023
+% "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
+% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2023, Paris, France.
+%
+% This code allows to extract the iris from an eye image using the Canny method
+% Creation of a folder to store the processed images
+% The image is first cropped to keep only the eye.
+% The Canny method is then applied to the image to detect the edges of the iris
+% (Gaussian filter, gradient calculation, hysteresis thresholding)
+% The iris is then extracted by multiplying the image by a filter and saved in a folder
+%
+% Input : nomImage : the name of the image to be processed
+% Output : nomFichierConverti : the name of the extracted iris image converted to .bmp format
+%         cheminAcces : the path to the extracted iris image
+%         im_rognee : the cropped image
+%         iris_extrait : the extracted iris
+%         filtre : the filter used to extract the iris
 
-% Fichier permettant l'isolation de l'iris
+clc;                  % Cleaning of the command window
+clear all;            % Clearing of all variables
+close all;            % Closing all windows
+pkg load image ;      % Loading of the image package
 
-clc;                  %Nettoyage de la fenêtre de commandes
-clear all;           %Suppression des variables
-close all;            %Fermeture de toutes les figures
-pkg load image ;
-
-% Préparation d'un dossier de stockage des images traitées
+% Creation of a folder to store the processed images
 nomImage = 'Images/iris6.jpg' ;
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 dossierStockage = 'Images_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
 cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 
-% Chargement de l'image
+% Image loading
 I = imread(nomImage) ;
 I = im2double(I) ;
 [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I) ;
 
-figure, imshow(I), title('Image originale') ;
+figure, imshow(I), title('Original image') ;
 
-
-% Rognage de l'image
-
-cote = 2*r_ext + 8 ;             % Marge de 4 pixels de chaque cote
+% Cropping of the image to keep only the eye
+cote = 2*r_ext + 8 ;             % Margin of 4 pixels on each side
 x_min = centre_oeil_x - cote/2 ;
 x_max = centre_oeil_x + cote/2 ;
 y_min = centre_oeil_y - cote/2 ;
@@ -32,12 +44,12 @@ y_max = centre_oeil_y + cote/2 ;
 
 im_rognee = zeros(cote+1,cote+1,3) ;
 im_rognee(:,:,:) = I(x_min:x_max,y_min:y_max,:) ;
-figure,imshow(im_rognee),title('im rognee');
+figure,imshow(im_rognee),title('Cropped image') ;
 
-% On refait les calculs mais cette fois sur l'image rognee
+% Reconduction of the calculations on the cropped image
 [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(im_rognee) ;
 
-% Création d'un filtre pour extraire l'anneau
+% Creation of a filter to extract the iris ring
 s = size(im_rognee) ;
 filtre = zeros(s(1),s(2)) ;
 x_milieu = round(s(1)/2);
@@ -49,14 +61,10 @@ for i = 1:s(1)
   end
 end
 
-figure, imshow(filtre), title('Filtre utilisé') ;
+figure, imshow(filtre), title('Filtre Used') ;
 
+% Conversion of the image to double
 I_double = im2double(im_rognee) ;
 
-% Extraction de l'iris
+% Extraction of the iris by multiplying the image by the filter
 iris_extrait = I_double.*filtre ;
-
-
-figure, imagesc(iris_extrait) , title('la bonne image') ;
-
-
