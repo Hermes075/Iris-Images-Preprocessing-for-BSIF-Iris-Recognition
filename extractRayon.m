@@ -1,13 +1,21 @@
-% Rivière Lucas - extractRayon - 14/11/2023
-
-% Fonction ayant pour but de déterminer le rayons intérieurs et extérieurs de l'iris par détection de contours
-% Ainsi que les coordonnées du centre de l'image (que l'on considère pour l'instant ccomme celui de l'oeil)
+% Arthur Rubio, Lucas Riviere, 11/2023
+% "Domain-Specific Human-Inspired Binarized Statistical Image Features for
+% Iris Recognition," IPOL (Image Processing On Line), 2023, Paris, France.
+%
+% This code determines the inner and outer radius of the iris using edge detection
+% The edge detection is performed using a Gaussian filter and the Canny method
+% Calculate the coordinates of the center of the image (which is considered for the moment as that of the eye)
+% Input : I : image of the iris
+% Output : r_ext : outer radius of the iris
+%          r_int : inner radius of the iris
+%          centre_oeil_x : x coordinate of the center of the image
+%          centre_oeil_y : y coordinate of the center of the image
 
 function [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I)
 
 s = size(I) ;
 
-% Lissage de l'image
+% Smoothing of the image
 G = fspecial("gaussian",25,5) ;
 I_gauss(:,:,1) = conv2(I(:,:,1),G,"same") ;
 I_gauss(:,:,2) = conv2(I(:,:,2),G,"same") ;
@@ -33,11 +41,9 @@ Bx = filter2(Mx,B)/6 ;
 By = filter2(My,B)/6 ;
 
 % Définition des éléments à utiliser dans la formule
-
 Ix2 = Rx.^2 + Gx.^2 + Bx.^2 ;
 IxIy = Rx.*Ry + Gx.*Gy + Bx.*By ;
 Iy2 = Ry.^2 + Gy.^2 + By.^2 ;
-
 
 % Création des contours
 Icol = sqrt(0.5*(Ix2 + Iy2 + sqrt((Ix2 - Iy2).^2 + (2*IxIy).^2))) ;
@@ -102,8 +108,3 @@ diam_ext = pixel_ext_d - pixel_ext_g ;
 % Calculer les rayons
 r_ext = round(diam_ext/2);  % Rayon extérieur de l'anneau
 r_int = round(diam_int/2);  % Rayon intérieur de l'anneau
-
-
-
-
-
