@@ -1,7 +1,9 @@
 # Preprocessing of Iris Images for BSIF-Based Biometric Systems: Canny Algorithm and Iris Unwrapping
 
+*Arthur Rubio, Lucas Rivière, "Preprocessing of Iris Images for BSIF-Based Biometric Systems: Canny Algorithm and Iris Unwrapping" IPOL (Image Processing On Line) 2023, Paris, France*
+
 ## Project Description
-This project is divided into two main modules. The first module focuses on processing standard iris images, employing techniques like edge detection, normalization, and iris unwrapping. Key scripts in this module include `extractRayon.m`, `extractIris.m`, `squareCircle.m`, `f_centre.m`, and `f_normalisation.m`. The second module is dedicated to iris recognition using a BSIF model, with scripts like `example.m`, `extractCode.m`, and `matchCodes.m` providing a similarity score between two iris images.
+This project is divided into two main modules. The first module focuses on processing standard iris images, employing techniques like edge detection, normalization, and iris unwrapping. Key scripts in this module include `extractRayon.m`, `extractIris.m` and `squareCircle.m`. The second module is dedicated to iris recognition using a BSIF model, with scripts like `example.m`, `extractCode.m`, and `matchCodes.m` providing a similarity score between two iris images. If the score is high (over 0.3), the two irises does not belong to the same person. On the other hand, if the score is under 0.3, the irises belong to the same individual.
 
 ## Installation
 To set up the project, install the MATLAB Image Processing Toolbox using the command `pkg load image`. No additional installations are required.
@@ -18,7 +20,7 @@ To compare iris images, execute `example.m`. Edit lines 34 to 40 to specify the 
 2. Implementing adaptive thresholding based on image lighting conditions for more effective segmentation and custom mask creation.
 
 ## Contributions
-Contributions are welcome, especially in the areas of improvement mentioned above. Feel free to fork the repository, make your changes, and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome, especially in the areas of improvement mentioned above! Feel free to fork the repository, make your changes, and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
 This project is licensed under the GNU General Public License v3.0.
