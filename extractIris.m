@@ -22,7 +22,7 @@ close all;            % Closing all windows
 pkg load image ;      % Loading of the image package
 
 % Creation of a folder to store the processed images
-nomImage = 'Images/iris12.tiff' ;
+nomImage = 'Images/iris1.tiff' ;
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 dossierStockage = 'Images_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;

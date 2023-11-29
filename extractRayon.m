@@ -36,11 +36,45 @@ IxIy = Ix .* Iy;
 % Creation of the edges
 Icol = sqrt(0.5 * (Ix2 + Iy2 + sqrt((Ix2 - Iy2).^2 + (2 * IxIy).^2)));
 
+% Creation of an image to store the results of non-maxima suppression
+Icol_suppr = zeros(size(Icol));
+
+for i = 2:size(Icol, 1) - 1
+    for j = 2:size(Icol, 2) - 1
+        % Conversion from radians to degree
+        currentAngle = atan2(Iy(i, j), Ix(i, j));
+        currentAngle = rad2deg(currentAngle);
+        if currentAngle < 0
+            currentAngle = currentAngle + 180;
+        end
+        currentMagnitude = Icol(i, j);
+        % Comparison with neighborhood pixels depending on the angle
+        if ((0 <= currentAngle < 22.5) || (157.5 <= currentAngle <= 180))
+            neighbor1 = Icol(i, j - 1);
+            neighbor2 = Icol(i, j + 1);
+        elseif (22.5 <= currentAngle < 67.5)
+            neighbor1 = Icol(i - 1, j + 1);
+            neighbor2 = Icol(i + 1, j - 1);
+        elseif (67.5 <= currentAngle < 112.5)
+            neighbor1 = Icol(i - 1, j);
+            neighbor2 = Icol(i + 1, j);
+        elseif (112.5 <= currentAngle < 157.5)
+            neighbor1 = Icol(i - 1, j - 1);
+            neighbor2 = Icol(i + 1, j + 1);
+        end
+
+        % Non-maxima suppression
+        if (currentMagnitude >= neighbor1) && (currentMagnitude >= neighbor2)
+            Icol_suppr(i, j) = currentMagnitude;
+        end
+    end
+end
+
 % Normalisation
-Icol_n = f_normalisation(Icol) ;
+Icol_suppr_n = f_normalisation(Icol_suppr) ;
 
 % Thresholding (slightly variable value depending on the image used)
-Icol_bin = Icol_n > 0.02 ;
+Icol_bin = Icol_suppr_n > 0.02 ;
 figure,imagesc(Icol_bin),colormap(gray),title("Image binarisee");
 
 % Détecter le rayon interieur

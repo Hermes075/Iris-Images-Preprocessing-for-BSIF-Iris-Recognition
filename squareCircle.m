@@ -75,7 +75,7 @@ mask = zeros(s(1),s(2));
 
 for i = 1:s(1)
   for j = 1:s(2)
-    mask(i,j) = (image_rect(i,j)>0.14) && (image_rect(i,j)<0.65);
+    mask(i,j) = (image_rect(i,j)>0.33) && (image_rect(i,j)<0.65);
   end
 end
 
