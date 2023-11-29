@@ -16,8 +16,7 @@
 function scoreC = matchCodes(codeBinary1,codeBinary2,msk1,msk2,filtersize)
 
 %% Remove upper and lower boundaries depending on the filter size
-%  But keep left/right portions due to circular symmetry of the normalized
-%  iris image.
+%  But keep left/right portions due to circular symmetry of the normalized iris image.
 margin = ceil(filtersize/2);
 codeBinary1 = codeBinary1(margin:end-margin,:,:);
 codeBinary2 = codeBinary2(margin:end-margin,:,:);
@@ -44,5 +43,3 @@ end
 %  kernel independently, and select the minimum value over all shifts
 %  compensating the eye rotation
 scoreC = min(mean(scoreC));
-
-

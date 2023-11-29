@@ -17,43 +17,43 @@ function [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I)
 s = size(I) ;
 
 % Smoothing of the image
-G = fspecial("gaussian",25,5) ; 
-I_gauss(:,:,1) = conv2(I(:,:,1),G,"same") ;
-I_gauss(:,:,2) = conv2(I(:,:,2),G,"same") ;
-I_gauss(:,:,3) = conv2(I(:,:,3),G,"same") ;
+G = fspecial("gaussian", 25, 5);
+I_gauss = conv2(I, G, "same");
 
 % Definition of the masks
 Mx = [ -1 0 1 ; -1 0 1 ; -1 0 1] ;
 My = [1 1 1 ; 0 0 0 ; -1 -1 -1] ;
 
-% Isolation of the channels
-R = I_gauss(:,:,1) ;
-G = I_gauss(:,:,2) ;
-B = I_gauss(:,:,3) ;
-
 % Calculate of the derivatives (convolution with the masks)
-Rx = filter2(Mx,R)/6 ;
-Ry = filter2(My,R)/6 ;
-
-Gx = filter2(Mx,G)/6 ;
-Gy = filter2(My,G)/6 ;
-
-Bx = filter2(Mx,B)/6 ;
-By = filter2(My,B)/6 ;
+Ix = filter2(Mx, I_gauss) / 6;
+Iy = filter2(My, I_gauss) / 6;
 
 % Definition of the elements to use in the formula
-Ix2 = Rx.^2 + Gx.^2 + Bx.^2 ;
-IxIy = Rx.*Ry + Gx.*Gy + Bx.*By ;
-Iy2 = Ry.^2 + Gy.^2 + By.^2 ;
+Ix2 = Ix.^2;
+Iy2 = Iy.^2;
+IxIy = Ix .* Iy;
 
 % Creation of the edges
-Icol = sqrt(0.5*(Ix2 + Iy2 + sqrt((Ix2 - Iy2).^2 + (2*IxIy).^2))) ;
+Icol = sqrt(0.5 * (Ix2 + Iy2 + sqrt((Ix2 - Iy2).^2 + (2 * IxIy).^2)));
 
 % Normalisation
 Icol_n = f_normalisation(Icol) ;
 
 % Thresholding (slightly variable value depending on the image used)
-Icol_bin = Icol_n > 0.26 ;
+Icol_bin = Icol_n > 0.02 ;
+figure,imagesc(Icol_bin),colormap(gray),title("Image binarisee");
+
+% Détecter le rayon interieur
+[centers1, radii1, metric1] = imfindcircles(Icol_bin, [20 80], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
+
+% Détecter le rayon exterieur
+[centers2, radii2, metric2] = imfindcircles(Icol_bin, [120 150], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
+
+% Superposer les cercles détectés du premier ensemble de paramètres
+viscircles(centers1, radii1, 'EdgeColor', 'b');
+
+% Superposer les cercles détectés du second ensemble de paramètres
+viscircles(centers2, radii2, 'EdgeColor', 'r');
 
 % Diameter calculation of the iris
 x_milieu = round(s(1)/2) ;
@@ -102,5 +102,5 @@ for j = s(2):-1:1
 diam_ext = pixel_ext_d - pixel_ext_g ;
 
 % Radius calculation
-r_ext = round(diam_ext/2);  % Rayon extérieur de l'anneau
-r_int = round(diam_int/2);  % Rayon intérieur de l'anneau
+r_ext = round(diam_ext/2);  % Inner radius of the iris
+r_int = round(diam_int/2);  % Outer radius of the iris

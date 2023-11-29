@@ -22,7 +22,7 @@ close all;            % Closing all windows
 pkg load image ;      % Loading of the image package
 
 % Creation of a folder to store the processed images
-nomImage = 'Images/iris6.jpg' ;
+nomImage = 'Images/iris10.tiff' ;
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 dossierStockage = 'Images_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
@@ -30,6 +30,9 @@ cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 
 % Image loading
 I = imread(nomImage) ;
+if ndims(I) == 3  % Vérifie si l'image est en couleur
+    I = rgb2gray(I);  % Convertit seulement les images en couleur
+end
 I = im2double(I) ;
 [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I) ;
 
@@ -61,7 +64,7 @@ for i = 1:s(1)
   end
 end
 
-figure, imshow(filtre), title('Filtre Used') ;
+figure, imshow(filtre), title('Filter Used') ;
 
 % Conversion of the image to double
 I_double = im2double(im_rognee) ;
