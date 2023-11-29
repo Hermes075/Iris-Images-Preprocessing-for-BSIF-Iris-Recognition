@@ -56,7 +56,7 @@ for i = 1:longueur_rectangle
     numPoints = rext - rint;
     x_line = linspace(x1(i), x2(i), numPoints);
     y_line = linspace(y1(i), y2(i), numPoints);
-    ligne_pixels = interp2(rgb2gray(iris_extrait), x_line, y_line, 'linear') ;
+    ligne_pixels = interp2(iris_extrait, x_line, y_line, 'linear') ;
     image_rect(:, i) = ligne_pixels;
 end
 

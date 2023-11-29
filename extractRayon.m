@@ -56,51 +56,9 @@ viscircles(centers1, radii1, 'EdgeColor', 'b');
 viscircles(centers2, radii2, 'EdgeColor', 'r');
 
 % Diameter calculation of the iris
-x_milieu = round(s(1)/2) ;
-y_milieu = round(s(2)/2) ;
 centre_oeil_x = round(s(1)/2) ;
 centre_oeil_y = round(s(2)/2) ;
-pixel_int_g = 0 ;
-pixel_int_d = 0 ;
-pixel_ext_g = 0 ;
-pixel_ext_d = 0 ;
-
-% Calculating the inner boundaries (determination of the first non-zero pixels from the center)
-for j = y_milieu:-1:1
-  if Icol_bin(x_milieu,j) == 1
-    pixel_int_g = j ;
-    break;
-  endif
-end
-
-for j = y_milieu:1:s(2)
-  if Icol_bin(x_milieu,j) == 1
-    pixel_int_d = j ;
-    break;
-  endif
-end
-
-% Inner diameter of the iris
-diam_int = pixel_int_d - pixel_int_g ;
-
-% Calculating the outer boundaries (determination of the first non-zero pixels from the edge)
-for j = 1:s(2)
-  if Icol_bin(x_milieu,j) == 1
-    pixel_ext_g = j ;
-    break ;
-  endif
-end
-
-for j = s(2):-1:1
-  if Icol_bin(x_milieu,j) == 1
-    pixel_ext_d = j ;
-    break ;
-  endif
-  end
-
-% Outer diameter of the iris
-diam_ext = pixel_ext_d - pixel_ext_g ;
 
 % Radius calculation
-r_ext = round(diam_ext/2);  % Inner radius of the iris
-r_int = round(diam_int/2);  % Outer radius of the iris
+r_int = round(radii1);  % Outer radius of the iris
+r_ext = round(radii2);  % Inner radius of the iris

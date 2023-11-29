@@ -22,7 +22,7 @@ close all;            % Closing all windows
 pkg load image ;      % Loading of the image package
 
 % Creation of a folder to store the processed images
-nomImage = 'Images/iris10.tiff' ;
+nomImage = 'Images/iris12.tiff' ;
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 dossierStockage = 'Images_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
@@ -45,8 +45,8 @@ x_max = centre_oeil_x + cote/2 ;
 y_min = centre_oeil_y - cote/2 ;
 y_max = centre_oeil_y + cote/2 ;
 
-im_rognee = zeros(cote+1,cote+1,3) ;
-im_rognee(:,:,:) = I(x_min:x_max,y_min:y_max,:) ;
+im_rognee = zeros(cote+1,cote+1) ;
+im_rognee(:,:,:) = I(x_min:x_max,y_min:y_max) ;
 figure,imshow(im_rognee),title('Cropped image') ;
 
 % Reconduction of the calculations on the cropped image
