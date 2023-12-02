@@ -77,16 +77,16 @@ Icol_suppr_n = f_normalisation(Icol_suppr) ;
 Icol_bin = Icol_suppr_n > 0.02 ;
 figure,imagesc(Icol_bin),colormap(gray),title("Image binarisee");
 
-% Détecter le rayon interieur
+% Get the parameters of the circle defining the iris/pupil boundary
 [centers1, radii1, metric1] = imfindcircles(Icol_bin, [20 80], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
 
-% Détecter le rayon exterieur
+% Get the parameters of the circle defining the iris/sclera boundary
 [centers2, radii2, metric2] = imfindcircles(Icol_bin, [120 150], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
 
-% Superposer les cercles détectés du premier ensemble de paramètres
+% Superpose the detected circles of the first set of parameters
 viscircles(centers1, radii1, 'EdgeColor', 'b');
 
-% Superposer les cercles détectés du second ensemble de paramètres
+% Superpose the detected circles of the second set of parameters
 viscircles(centers2, radii2, 'EdgeColor', 'r');
 
 % Diameter calculation of the iris

@@ -23,7 +23,7 @@ filters = ['./iris_sourced_filters/new_bsif_filters_based_on_eyetracker_data/ICA
 load(filters);
 
 %% Load iris normalized images and the corresponding masks, and extract the binary codes
-for i=1:6
+for i=1:5
     im = imread(['./Images_bmp/iris' num2str(i) '.bmp']);
     codes(:,:,:,i) = extractCode(im,ICAtextureFilters);
     masks(:,:,i) = imread(['./Masks_bmp/iris' num2str(i) '_mask.bmp']);
@@ -32,7 +32,7 @@ end
 %% Calculate comparison scores
 
 % Genuine:
-scoreG = matchCodes(codes(:,:,:,1),codes(:,:,:,2),masks(:,:,1),masks(:,:,2),l);
+scoreG = matchCodes(codes(:,:,:,1),codes(:,:,:,3),masks(:,:,1),masks(:,:,3),l);
 disp(['genuine comparison score = ' num2str(scoreG)])
 
 % Impostor:
