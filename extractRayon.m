@@ -87,10 +87,10 @@ figure,imagesc(Icol_bin),colormap(gray),title("Image binarisee");
 [centers2, radii2, metric2] = imfindcircles(Icol_bin, [120 150], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
 
 % Superpose the detected circles of the first set of parameters
-%viscircles(centers1, radii1, 'EdgeColor', 'b');
+viscircles(centers1, radii1, 'EdgeColor', 'b');
 
 % Superpose the detected circles of the second set of parameters
-%viscircles(centers2, radii2, 'EdgeColor', 'r');
+viscircles(centers2, radii2, 'EdgeColor', 'r');
 
 % Diameter calculation of the iris
 centre_oeil_x = round(s(1)/2) ;
