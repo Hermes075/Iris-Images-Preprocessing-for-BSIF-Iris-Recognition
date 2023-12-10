@@ -16,9 +16,12 @@ function [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I)
 
 s = size(I) ;
 
+noisy_img = f_addSaltPepperNoise(I, 0.05); % Ajouter le bruit
+
 % Smoothing of the image
 G = fspecial("gaussian", 25, 5);
 I_gauss = conv2(I, G, "same");
+I_gauss_SP = conv2(noisy_img, G, "same");
 
 % Definition of the masks
 Mx = [ -1 0 1 ; -1 0 1 ; -1 0 1] ;
@@ -84,10 +87,10 @@ figure,imagesc(Icol_bin),colormap(gray),title("Image binarisee");
 [centers2, radii2, metric2] = imfindcircles(Icol_bin, [120 150], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
 
 % Superpose the detected circles of the first set of parameters
-viscircles(centers1, radii1, 'EdgeColor', 'b');
+%viscircles(centers1, radii1, 'EdgeColor', 'b');
 
 % Superpose the detected circles of the second set of parameters
-viscircles(centers2, radii2, 'EdgeColor', 'r');
+%viscircles(centers2, radii2, 'EdgeColor', 'r');
 
 % Diameter calculation of the iris
 centre_oeil_x = round(s(1)/2) ;
