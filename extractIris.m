@@ -22,7 +22,7 @@ close all;            % Closing all windows
 pkg load image ;      % Loading of the image package
 
 % Creation of a folder to store the processed images
-nomImage = 'Images/iris2.tiff' ;
+nomImage = 'Images/iris3.tiff' ;
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 dossierStockage = 'Images_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
@@ -37,7 +37,6 @@ I = im2double(I) ;
 [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I) ;
 
 figure, imshow(I), title('Original image') ;
-%imwrite(I, 'Paper_Images/Iris_extraction/Original.png', 'png');
 
 % Cropping of the image to keep only the eye
 cote = 2*r_ext + 8 ;             % Margin of 4 pixels on each side
@@ -49,7 +48,6 @@ y_max = centre_oeil_y + cote/2 ;
 im_rognee = zeros(cote+1,cote+1) ;
 im_rognee(:,:,:) = I(x_min:x_max,y_min:y_max) ;
 figure,imshow(im_rognee),title('Cropped image') ;
-imwrite(im_rognee, 'Paper_Images/Iris_extraction/Cropped_Image.png', 'png');
 
 % Reconduction of the calculations on the cropped image
 [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(im_rognee) ;
@@ -67,7 +65,6 @@ for i = 1:s(1)
 end
 
 figure, imshow(filtre), title('Filter Used') ;
-imwrite(filtre, 'Paper_Images/Iris_extraction/Filter.png', 'png');
 
 % Conversion of the image to double
 I_double = im2double(im_rognee) ;
@@ -75,4 +72,3 @@ I_double = im2double(im_rognee) ;
 % Extraction of the iris by multiplying the image by the filter
 iris_extrait = I_double.*filtre ;
 figure, imagesc(iris_extrait), title('Extracted Iris'), colormap gray ;
-imwrite(iris_extrait, 'Paper_Images/Iris_extraction/Extracted_iris.png', 'png');
