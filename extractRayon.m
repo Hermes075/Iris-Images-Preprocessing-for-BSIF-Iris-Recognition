@@ -78,7 +78,26 @@ Icol_suppr_n = f_normalisation(Icol_suppr) ;
 
 % Thresholding (slightly variable value depending on the image used)
 Icol_bin = Icol_suppr_n > 0.02 ;
-figure,imagesc(Icol_bin),colormap(gray),title("Image binarisee");
+
+% Invert the colors of the binarized image
+Icol_bin_inverted = ~Icol_bin;
+
+% Définir la taille de la marge (2 pixels)
+taille_marge = 5;
+
+% Obtenir les dimensions de l'image originale
+[dimy, dimx] = size(Icol_bin_inverted);
+
+% Calculer les dimensions de la nouvelle image avec la marge
+nouvelle_dimy = dimy + 2 * taille_marge;
+nouvelle_dimx = dimx + 2 * taille_marge;
+
+% Créer une matrice noire de la nouvelle taille
+image_avec_marge = zeros(nouvelle_dimy, nouvelle_dimx);
+
+% Copier l'image originale au centre de la nouvelle matrice
+image_avec_marge(taille_marge + 1:taille_marge + dimy, taille_marge + 1:taille_marge + dimx) = Icol_bin_inverted;
+figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
 
 % Get the parameters of the circle defining the iris/pupil boundary
 [centers1, radii1, metric1] = imfindcircles(Icol_bin, [20 80], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
