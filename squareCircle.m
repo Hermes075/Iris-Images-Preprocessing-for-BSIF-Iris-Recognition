@@ -19,7 +19,9 @@ clc;                  % Clear command window.
 clear all;            % Remove items from workspace, freeing up system memory
 close all;            % Close all figures
 pkg load image;       % Load image package
-extractIris;          % Load the image processed by the Canny algorithm
+
+nomImage = 'Images/iris2.tiff';
+[iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces, nomSansExtension] = extractIris(nomImage);
 
 % Redefine the eye radius
 rint = r_int ; % Inner radius (pupil/iris boundary)

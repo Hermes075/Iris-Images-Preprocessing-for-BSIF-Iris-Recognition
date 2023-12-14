@@ -16,13 +16,9 @@
 %         iris_extrait : the extracted iris
 %         filtre : the filter used to extract the iris
 
-clc;                  % Cleaning of the command window
-clear all;            % Clearing of all variables
-close all;            % Closing all windows
-pkg load image ;      % Loading of the image package
+function [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces, nomSansExtension] = extractIris(nomImage)
 
 % Creation of a folder to store the processed images
-nomImage = 'Images/iris2.tiff' ;
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 dossierStockage = 'Images_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
@@ -60,7 +56,7 @@ y_milieu = round(s(2)/2) ;
 
 for i = 1:s(1)
   for j = 1:s(2)
-    filtre(i,j) = (sqrt((i-x_milieu)**2 + (j-y_milieu)**2) >= r_int) && (sqrt((i-x_milieu)**2 + (j-y_milieu)**2) <= r_ext) ;
+    filtre(i,j) = (sqrt((i-x_milieu)^2 + (j-y_milieu)^2) >= r_int) && (sqrt((i-x_milieu)^2 + (j-y_milieu)^2) <= r_ext) ;
   end
 end
 
@@ -72,3 +68,4 @@ I_double = im2double(im_rognee) ;
 % Extraction of the iris by multiplying the image by the filter
 iris_extrait = I_double.*filtre ;
 figure, imagesc(iris_extrait), title('Extracted Iris'), colormap gray ;
+
