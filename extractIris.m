@@ -20,7 +20,8 @@ function [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces,
 
 % Creation of a folder to store the processed images
 [chemin, nomSansExtension] = fileparts(nomImage) ;
-dossierStockage = 'Images_bmp' ;
+% CHANGE STORAGE FOLDER HERE
+dossierStockage = 'BDD_test/BDD_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
 cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 
@@ -68,4 +69,3 @@ I_double = im2double(im_rognee) ;
 % Extraction of the iris by multiplying the image by the filter
 iris_extrait = I_double.*filtre ;
 figure, imagesc(iris_extrait), title('Extracted Iris'), colormap gray ;
-

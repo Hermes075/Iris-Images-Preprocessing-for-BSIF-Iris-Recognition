@@ -15,12 +15,7 @@
 % Output : iris_rect.bmp (unwrapped iris)
 %          iris_rect_mask.bmp (mask of the unwrapped iris)
 
-clc;                  % Clear command window.
-clear all;            % Remove items from workspace, freeing up system memory
-close all;            % Close all figures
-pkg load image;       % Load image package
-
-nomImage = 'Images/iris2.tiff';
+function [image_rect, mask] = squareCircle(nomImage)
 [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces, nomSansExtension] = extractIris(nomImage);
 
 % Redefine the eye radius
@@ -87,8 +82,10 @@ figure, imagesc(mask) ,  colormap(gray)  , title('Masque Iris') ;
 
 % Mask storage
 nomMask = [nomSansExtension '_mask'];
-dossierStockage = 'Masks_bmp' ;
+% CHANGE STORAGE PATH HERE
+dossierStockage = 'BDD_test/Masks_bmp/' ;
 nomFichierConverti = [nomMask '.bmp'] ;
-cheminAcces = ['Masks_bmp/' nomMask '.bmp'] ;
+cheminAcces = ['BDD_test/Masks_bmp/' nomMask '.bmp'] ;
 
 imwrite(mask, cheminAcces, 'bmp') ;
+end
