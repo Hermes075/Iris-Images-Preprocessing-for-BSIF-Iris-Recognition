@@ -64,10 +64,11 @@ nouvelle_taille = [64, 512];
 
 % Usage of imresize function to resize the image
 image_rect = imresize(image_rect, nouvelle_taille);
-imwrite(image_rect, cheminAcces, 'bmp') ;
+im_rect_uint8 = uint8(255 * mat2gray(image_rect));
+imwrite(im_rect_uint8, cheminAcces, 'bmp') ;
 
 % Mask creation
-s=size(image_rect) ;
+s=size(image_rect);
 mask = zeros(s(1),s(2));
 
 for i = 1:s(1)
@@ -78,14 +79,15 @@ end
 
 % Making the mask logical for the BSIF filter to work
 mask = logical(mask) ;
-figure, imagesc(mask) ,  colormap(gray)  , title('Masque Iris') ;
+figure, imagesc(double(mask)), colormap(gray), title('Masque Iris');
 
 % Mask storage
 nomMask = [nomSansExtension '_mask'];
 % CHANGE STORAGE PATH HERE
-dossierStockage = 'BDD_test/Masks_bmp/' ;
-nomFichierConverti = [nomMask '.bmp'] ;
-cheminAcces = ['BDD_test/Masks_bmp/' nomMask '.bmp'] ;
+dossierStockageMask = 'BDD_test/Masks_bmp/' ;
+nomFichierConvertiMask = [nomMask '.bmp'] ;
+cheminAccesMask = ['BDD_test/Masks_bmp/' nomMask '.bmp'] ;
 
-imwrite(mask, cheminAcces, 'bmp') ;
+% mask_uint8 = uint8(255 * mat2gray(mask));
+imwrite(mask, cheminAccesMask, 'bmp') ;
 end
