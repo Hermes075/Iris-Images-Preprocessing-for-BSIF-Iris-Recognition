@@ -16,7 +16,7 @@ function [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I)
 
 s = size(I) ;
 
-noisy_img = f_addSaltPepperNoise(I, 0.05); % Ajouter le bruit
+% noisy_img = f_addSaltPepperNoise(I, 0.05); % Ajouter le bruit
 
 % Smoothing of the image
 G = fspecial("gaussian", 25, 5);
@@ -97,7 +97,7 @@ image_avec_marge = zeros(nouvelle_dimy, nouvelle_dimx);
 
 % Copier l'image originale au centre de la nouvelle matrice
 image_avec_marge(taille_marge + 1:taille_marge + dimy, taille_marge + 1:taille_marge + dimx) = Icol_bin_inverted;
-figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
+% figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
 
 % Get the parameters of the circle defining the iris/pupil boundary
 [centers1, radii1, metric1] = imfindcircles(Icol_bin, [20 80], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);

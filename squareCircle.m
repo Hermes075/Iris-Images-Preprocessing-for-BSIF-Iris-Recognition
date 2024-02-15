@@ -57,7 +57,7 @@ for i = 1:longueur_rectangle
     image_rect(:, i) = ligne_pixels;
 end
 
-figure, imagesc(image_rect, []), colormap(gray), title('Unwrapped Iris') ;
+% figure, imagesc(image_rect, []), colormap(gray), title('Unwrapped Iris') ;
 
 % New size of the image in order for the BSIF filter to work
 nouvelle_taille = [64, 512];
@@ -79,14 +79,14 @@ end
 
 % Making the mask logical for the BSIF filter to work
 mask = logical(mask) ;
-figure, imagesc(double(mask)), colormap(gray), title('Masque Iris');
+% figure, imagesc(double(mask)), colormap(gray), title('Masque Iris');
 
 % Mask storage
 nomMask = [nomSansExtension '_mask'];
 % CHANGE STORAGE PATH HERE
-dossierStockageMask = 'BDD_test/Masks_bmp/' ;
+dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' ;
 nomFichierConvertiMask = [nomMask '.bmp'] ;
-cheminAccesMask = ['BDD_test/Masks_bmp/' nomMask '.bmp'] ;
+cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' nomMask '.bmp'] ;
 
 % mask_uint8 = uint8(255 * mat2gray(mask));
 imwrite(mask, cheminAccesMask, 'bmp') ;

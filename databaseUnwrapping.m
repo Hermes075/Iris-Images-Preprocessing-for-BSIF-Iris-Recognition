@@ -7,7 +7,7 @@ close all;            % Close all figures
 pkg load image;       % Load image package
 
 % Define the path to your database
-databasePath = 'BDD_test/BDD_tiff';
+databasePath = 'D:/Prive/Code/BSIF-iris/WACV_2019_Czajka_etal_Stest_images/WACV_2019_Czajka_etal_Stest_images';
 filePattern = fullfile(databasePath, '*.tiff');
 tiffFiles = dir(filePattern);
 

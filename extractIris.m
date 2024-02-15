@@ -21,7 +21,7 @@ function [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces,
 % Creation of a folder to store the processed images
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 % CHANGE STORAGE FOLDER HERE
-dossierStockage = 'BDD_test/BDD_bmp' ;
+dossierStockage = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
 cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 
@@ -33,7 +33,7 @@ end
 I = im2double(I) ;
 [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I) ;
 
-figure, imagesc(I), title('Original image'), colormap gray ;
+% figure, imagesc(I), title('Original image'), colormap gray ;
 
 % Cropping of the image to keep only the eye
 cote = 2*r_ext + 8 ;             % Margin of 4 pixels on each side
@@ -44,7 +44,7 @@ y_max = centre_oeil_y + cote/2 ;
 
 im_rognee = zeros(cote+1,cote+1) ;
 im_rognee(:,:,:) = I(x_min:x_max,y_min:y_max) ;
-figure, imagesc(im_rognee), title('Cropped image'), colormap gray ;
+% figure, imagesc(im_rognee), title('Cropped image'), colormap gray ;
 
 % Reconduction of the calculations on the cropped image
 [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(im_rognee) ;
@@ -61,11 +61,11 @@ for i = 1:s(1)
   end
 end
 
-figure, imagesc(filtre), title('Filter Used') ;
+% figure, imagesc(filtre), title('Filter Used') ;
 
 % Conversion of the image to double
 I_double = im2double(im_rognee) ;
 
 % Extraction of the iris by multiplying the image by the filter
 iris_extrait = I_double.*filtre ;
-figure, imagesc(iris_extrait), title('Extracted Iris'), colormap gray ;
+% figure, imagesc(iris_extrait), title('Extracted Iris'), colormap gray ;
