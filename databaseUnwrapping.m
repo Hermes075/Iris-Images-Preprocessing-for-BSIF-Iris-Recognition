@@ -7,7 +7,11 @@ close all;            % Close all figures
 pkg load image;       % Load image package
 
 % Define the path to your database
-databasePath = 'D:/Prive/Code/BSIF-iris/WACV_2019_Czajka_etal_Stest_images/WACV_2019_Czajka_etal_Stest_images';
+% ORIGINAL DB PATH
+% databasePath = 'D:/Prive/Code/BSIF-iris/WACV_2019_Czajka_etal_Stest_images/WACV_2019_Czajka_etal_Stest_images';
+
+% TEST DB PATH
+databasePath = 'D:/Prive/Code/BSIF-iris/Not_working/Not_working_img';
 filePattern = fullfile(databasePath, '*.tiff');
 tiffFiles = dir(filePattern);
 

@@ -21,7 +21,7 @@ s = size(I) ;
 % Smoothing of the image
 G = fspecial("gaussian", 25, 5);
 I_gauss = conv2(I, G, "same");
-I_gauss_SP = conv2(noisy_img, G, "same");
+% I_gauss_SP = conv2(noisy_img, G, "same");
 
 % Definition of the masks
 Mx = [ -1 0 1 ; -1 0 1 ; -1 0 1] ;
@@ -97,24 +97,58 @@ image_avec_marge = zeros(nouvelle_dimy, nouvelle_dimx);
 
 % Copier l'image originale au centre de la nouvelle matrice
 image_avec_marge(taille_marge + 1:taille_marge + dimy, taille_marge + 1:taille_marge + dimx) = Icol_bin_inverted;
-% figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
+figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
 
 % Get the parameters of the circle defining the iris/pupil boundary
-[centers1, radii1, metric1] = imfindcircles(Icol_bin, [20 80], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
+[centers1, radii1, metric1] = imfindcircles(Icol_bin, [20 80], 'ObjectPolarity', 'bright', 'Sensitivity', 0.9);
 
 % Get the parameters of the circle defining the iris/sclera boundary
-[centers2, radii2, metric2] = imfindcircles(Icol_bin, [120 150], 'ObjectPolarity', 'bright', 'Sensitivity', 0.3);
+[centers2, radii2, metric2] = imfindcircles(Icol_bin, [100 140], 'ObjectPolarity', 'bright', 'Sensitivity', 0.95);
 
-% Superpose the detected circles of the first set of parameters
-viscircles(centers1, radii1, 'EdgeColor', 'b');
+% Initialisation des listes pour conserver les cercles filtrés
+filteredCenters1 = [];
+filteredRadii1 = [];
+filteredMetric1 = [];
+filteredCenters2 = [];
+filteredRadii2 = [];
+filteredMetric2 = [];
 
-% Superpose the detected circles of the second set of parameters
-viscircles(centers2, radii2, 'EdgeColor', 'r');
+% Tolerance pour la comparaison des centres
+tolerance = 20;
+
+% Boucle à travers tous les cercles détectés pour trouver des centres similaires
+if ~isempty(centers1) && ~isempty(centers2)
+    for i = 1:size(centers1, 1)
+        for j = 1:size(centers2, 1)
+            if abs(centers1(i,1) - centers2(j,1)) <= tolerance && abs(centers1(i,2) - centers2(j,2)) <= tolerance
+                % Ajoute les cercles correspondants aux listes filtrées
+                filteredCenters1 = [filteredCenters1; centers1(i,:)];
+                filteredRadii1 = [filteredRadii1; radii1(i)];
+                filteredMetric1 = [filteredMetric1; metric1(i)];
+                filteredCenters2 = [filteredCenters2; centers2(j,:)];
+                filteredRadii2 = [filteredRadii2; radii2(j)];
+                filteredMetric2 = [filteredMetric2; metric2(j)];
+            end
+        end
+    end
+end
+
+hold on;
+% Vérification et affichage des cercles pour filteredCenters1
+if ~isempty(filteredCenters1)
+    viscircles(filteredCenters1, filteredRadii1, 'EdgeColor', 'b');
+end
+
+% Vérification et affichage des cercles pour filteredCenters2
+if ~isempty(filteredCenters2)
+    viscircles(filteredCenters2, filteredRadii2, 'EdgeColor', 'r');
+end
+hold off;
 
 % Diameter calculation of the iris
-centre_oeil_x = round(s(1)/2) ;
-centre_oeil_y = round(s(2)/2) ;
+centre_oeil_x = round(filteredCenters2(1,1));
+centre_oeil_y = round(filteredCenters2(1,2));
 
 % Radius calculation
-r_int = round(radii1);  % Outer radius of the iris
-r_ext = round(radii2);  % Inner radius of the iris
+r_int = round(filteredRadii1);  % Outer radius of the iris
+r_ext = round(filteredRadii2);  % Inner radius of the iris

@@ -21,7 +21,10 @@ function [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces,
 % Creation of a folder to store the processed images
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 % CHANGE STORAGE FOLDER HERE
-dossierStockage = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp' ;
+% ORIGINAL STOCKAGE FILE
+% dossierStockage = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp' ;
+% TEST STOCKAGE FILE
+dossierStockage = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB/DB_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
 cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 
