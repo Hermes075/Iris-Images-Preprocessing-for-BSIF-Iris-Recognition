@@ -4,7 +4,7 @@
 clc;                  % Clear command window.
 clear all;            % Remove items from workspace, freeing up system memory
 close all;            % Close all figures
-pkg load image;       % Load image package
+% pkg load image;       % Load image package (only for Octave)
 
 % Define the path to your database
 % ORIGINAL DB PATH

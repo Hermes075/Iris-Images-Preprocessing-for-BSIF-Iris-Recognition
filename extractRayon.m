@@ -80,6 +80,7 @@ Icol_suppr_n = f_normalisation(Icol_suppr) ;
 
 % Thresholding (slightly variable value depending on the image used)
 Icol_bin = Icol_suppr_n > 0.02 ;
+[centers1, radii1, metric1, centers2, radii2, metric2] = detectCirclesWithDynamicSensitivity(Icol_bin);
 
 % Invert the colors of the binarized image
 Icol_bin_inverted = ~Icol_bin;
@@ -101,12 +102,44 @@ image_avec_marge = zeros(nouvelle_dimy, nouvelle_dimx);
 image_avec_marge(taille_marge + 1:taille_marge + dimy, taille_marge + 1:taille_marge + dimx) = Icol_bin_inverted;
 % figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
 
-% Get the parameters of the circle defining the iris/pupil boundary
-[centers1, radii1, metric1] = imfindcircles(Icol_bin, [20 80], 'ObjectPolarity', 'bright', 'Sensitivity', 0.9);
+function [centers1, radii1, metric1, centers2, radii2, metric2] = detectCirclesWithDynamicSensitivity(Icol_bin)
+    % Initialiser les paramètres de sensibilité
+    initialSensitivity = 0.859;  % Commencez avec une sensibilité plus basse
+    maxSensitivity = 1.2;     % Sensibilité maximale à ne pas dépasser
+    sensitivityStep = 0.02;    % Incrément de la sensibilité pour chaque itération
 
-% Get the parameters of the circle defining the iris/sclera boundary
-[centers2, radii2, metric2] = imfindcircles(Icol_bin, [100 140], 'ObjectPolarity', 'bright', 'Sensitivity', 0.95);
-% figure,imagesc(Icol_bin),colormap(gray),title("found circles")
+    % Détection pour le cercle iris/pupille
+    [centers1, radii1, metric1] = tryFindCircles(Icol_bin, [20 80], 'bright', initialSensitivity, maxSensitivity, sensitivityStep);
+
+    % Détection pour le cercle iris/sclère
+    [centers2, radii2, metric2] = tryFindCircles(Icol_bin, [100 140], 'bright', initialSensitivity, maxSensitivity, sensitivityStep);
+end
+
+function [centers, radii, metric] = tryFindCircles(Icol_bin, radiusRange, objectPolarity, initialSensitivity, maxSensitivity, sensitivityStep)  
+    sensitivity = initialSensitivity;
+    centers = [];
+    radii = [];
+    metric = [];
+    
+    % Tant que la sensibilité ne dépasse pas le maximum et qu'aucun cercle n'a été détecté
+    while isempty(centers) && sensitivity <= maxSensitivity
+        [centers, radii, metric] = imfindcircles(Icol_bin, radiusRange, 'ObjectPolarity', objectPolarity, 'Sensitivity', sensitivity);
+        
+        % Augmenter la sensibilité pour la prochaine itération si aucun cercle n'est trouvé
+        if isempty(centers)
+            sensitivity = sensitivity + sensitivityStep;
+        end
+    end
+    
+    % Afficher un message si aucun cercle n'est détecté même à la sensibilité maximale
+    if isempty(centers)
+        fprintf('Aucun cercle trouvé même avec une sensibilité de %.2f\n', maxSensitivity);
+    else
+        fprintf('Cercles trouvés avec une sensibilité de %.2f\n', sensitivity);
+    end
+end
+
+figure,imagesc(Icol_bin),colormap(gray),title("found circles");
 
 % Initialisation des listes pour conserver les cercles filtrés
 filteredCenters1 = [];
@@ -142,7 +175,6 @@ if isempty(filteredCenters1) && ~isempty(centers1)
     [~, closestIndex1] = min(distances);
     filteredCenters1 = centers1(closestIndex1, :);
     filteredRadii1 = radii1(closestIndex1);
-    filteredMetric1 = metric1(closestIndex1);
 end
 
 if isempty(filteredCenters2) && ~isempty(centers2)
@@ -150,7 +182,6 @@ if isempty(filteredCenters2) && ~isempty(centers2)
     [~, closestIndex2] = min(distances);
     filteredCenters2 = centers2(closestIndex2, :);
     filteredRadii2 = radii2(closestIndex2);
-    filteredMetric2 = metric2(closestIndex2);
 end
 
 hold on;
@@ -172,3 +203,4 @@ centre_oeil_y = round(filteredCenters2(1,2));
 % Radius calculation
 r_int = round(filteredRadii1);  % Outer radius of the iris
 r_ext = round(filteredRadii2);  % Inner radius of the iris
+end
