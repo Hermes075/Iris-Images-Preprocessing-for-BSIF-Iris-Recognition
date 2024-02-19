@@ -39,14 +39,16 @@ I = im2double(I) ;
 % figure, imagesc(I), title('Original image'), colormap gray ;
 
 % Cropping of the image to keep only the eye
-cote = 2*r_ext + 8 ;             % Margin of 4 pixels on each side
-x_min = centre_oeil_x - cote/2 ;
-x_max = centre_oeil_x + cote/2 ;
-y_min = centre_oeil_y - cote/2 ;
-y_max = centre_oeil_y + cote/2 ;
+side_length = 2 * r_ext + 50; % Adjust the margin if necessary
 
-im_rognee = zeros(cote+1,cote+1) ;
-im_rognee(:,:,:) = I(x_min:x_max,y_min:y_max) ;
+% Calculate the cropping coordinates
+x_min = max(1, round(centre_oeil_x - side_length / 2));
+x_max = min(size(I, 2), round(centre_oeil_x + side_length / 2));
+y_min = max(1, round(centre_oeil_y - side_length / 2));
+y_max = min(size(I, 1), round(centre_oeil_y + side_length / 2));
+
+% Crop the image
+im_rognee = I(y_min:y_max, x_min:x_max);
 % figure, imagesc(im_rognee), title('Cropped image'), colormap gray ;
 
 % Reconduction of the calculations on the cropped image

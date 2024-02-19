@@ -97,13 +97,14 @@ image_avec_marge = zeros(nouvelle_dimy, nouvelle_dimx);
 
 % Copier l'image originale au centre de la nouvelle matrice
 image_avec_marge(taille_marge + 1:taille_marge + dimy, taille_marge + 1:taille_marge + dimx) = Icol_bin_inverted;
-figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
+% figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
 
 % Get the parameters of the circle defining the iris/pupil boundary
 [centers1, radii1, metric1] = imfindcircles(Icol_bin, [20 80], 'ObjectPolarity', 'bright', 'Sensitivity', 0.9);
 
 % Get the parameters of the circle defining the iris/sclera boundary
 [centers2, radii2, metric2] = imfindcircles(Icol_bin, [100 140], 'ObjectPolarity', 'bright', 'Sensitivity', 0.95);
+% figure,imagesc(Icol_bin),colormap(gray),title("found circles")
 
 % Initialisation des listes pour conserver les cercles filtrés
 filteredCenters1 = [];
@@ -114,7 +115,7 @@ filteredRadii2 = [];
 filteredMetric2 = [];
 
 % Tolerance pour la comparaison des centres
-tolerance = 20;
+tolerance = 10;
 
 % Boucle à travers tous les cercles détectés pour trouver des centres similaires
 if ~isempty(centers1) && ~isempty(centers2)
@@ -131,6 +132,26 @@ if ~isempty(centers1) && ~isempty(centers2)
             end
         end
     end
+end
+
+centreImageX = round(s(2)/2);
+centreImageY = round(s(1)/2);
+
+% Après avoir trouvé tous les cercles
+if isempty(filteredCenters1) && ~isempty(centers1)
+    distances = sqrt((centers1(:,1) - centreImageX).^2 + (centers1(:,2) - centreImageY).^2);
+    [~, closestIndex1] = min(distances);
+    filteredCenters1 = centers1(closestIndex1, :);
+    filteredRadii1 = radii1(closestIndex1);
+    filteredMetric1 = metric1(closestIndex1);
+end
+
+if isempty(filteredCenters2) && ~isempty(centers2)
+    distances = sqrt((centers2(:,1) - centreImageX).^2 + (centers2(:,2) - centreImageY).^2);
+    [~, closestIndex2] = min(distances);
+    filteredCenters2 = centers2(closestIndex2, :);
+    filteredRadii2 = radii2(closestIndex2);
+    filteredMetric2 = metric2(closestIndex2);
 end
 
 hold on;
