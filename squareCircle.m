@@ -71,11 +71,11 @@ imwrite(im_rect_uint8, cheminAcces, 'bmp') ;
 s=size(image_rect);
 mask = zeros(s(1),s(2));
 
-for i = 1:s(1)
-  for j = 1:s(2)
-    mask(i,j) = (image_rect(i,j)>0.33) && (image_rect(i,j)<0.65);
-  end
-end
+% Calcul du seuil adaptatif pour l'image
+seuilAdaptatif = adaptthresh(image_rect, 'ForegroundPolarity','dark','NeighborhoodSize',round([s(1)/8 s(2)/8]));
+
+% Application du seuil pour créer le masque
+mask = imbinarize(image_rect,seuilAdaptatif);
 
 % Making the mask logical for the BSIF filter to work
 mask = logical(mask) ;

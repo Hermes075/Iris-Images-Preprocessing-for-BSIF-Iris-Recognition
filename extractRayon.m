@@ -14,7 +14,9 @@
 
 function [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I)
 
-s = size(I) ;
+s = size(I);
+centreImageX = round(s(2)/2);
+centreImageY = round(s(1)/2);
 
 % noisy_img = f_addSaltPepperNoise(I, 0.05); % Ajouter le bruit
 
@@ -115,7 +117,7 @@ filteredRadii2 = [];
 filteredMetric2 = [];
 
 % Tolerance pour la comparaison des centres
-tolerance = 10;
+tolerance = 15;
 
 % Boucle à travers tous les cercles détectés pour trouver des centres similaires
 if ~isempty(centers1) && ~isempty(centers2)
@@ -133,9 +135,6 @@ if ~isempty(centers1) && ~isempty(centers2)
         end
     end
 end
-
-centreImageX = round(s(2)/2);
-centreImageY = round(s(1)/2);
 
 % Après avoir trouvé tous les cercles
 if isempty(filteredCenters1) && ~isempty(centers1)
