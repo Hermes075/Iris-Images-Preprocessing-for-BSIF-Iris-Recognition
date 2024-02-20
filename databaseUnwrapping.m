@@ -23,3 +23,5 @@ for k = 1:length(tiffFiles)
     % Now you can call your squareCircle function with the parameters
     squareCircle(fullFileName);
 end
+
+% test comment
