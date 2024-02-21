@@ -24,4 +24,4 @@ for k = 1:length(tiffFiles)
     squareCircle(fullFileName);
 end
 
-% test comment
+% 

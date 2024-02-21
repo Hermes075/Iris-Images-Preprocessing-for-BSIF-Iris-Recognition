@@ -30,6 +30,7 @@ cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 
 % Image loading
 I = imread(nomImage) ;
+s = size(I)
 if ndims(I) == 3  % Vérifie si l'image est en couleur
     I = rgb2gray(I);  % Convertit seulement les images en couleur
 end
@@ -60,11 +61,16 @@ filtre = zeros(s(1),s(2)) ;
 x_milieu = round(s(1)/2);
 y_milieu = round(s(2)/2) ;
 
-for i = 1:s(1)
-  for j = 1:s(2)
-    filtre(i,j) = (sqrt((i-x_milieu)^2 + (j-y_milieu)^2) >= r_int) && (sqrt((i-x_milieu)^2 + (j-y_milieu)^2) <= r_ext) ;
-  end
-end
+[x, y] = meshgrid(1:s(2), 1:s(1)); % Notez l'inversion de s(1) et s(2) pour correspondre à Y et X respectivement
+
+% Calcul de la distance de chaque pixel au centre (x_milieu, y_milieu)
+distances = sqrt((x - x_milieu).^2 + (y - y_milieu).^2);
+
+disp(size(r_int));
+disp(size(r_ext));
+disp(size(distances));
+% Création du masque logique pour les pixels à l'intérieur de l'anneau
+filtre = (distances >= r_int) & (distances <= r_ext);
 
 % figure, imagesc(filtre), title('Filter Used') ;
 

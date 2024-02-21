@@ -1,3 +1,4 @@
+% v2 modified by Baptiste Magnier
 % Arthur Rubio, Lucas Riviere, 11/2023
 % "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
 % Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2023, Paris, France.
@@ -12,74 +13,46 @@
 %          centre_oeil_x : x coordinate of the center of the image
 %          centre_oeil_y : y coordinate of the center of the image
 
-function [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(I)
+function [r_ext,r_int,centre_oeil_x,centre_oeil_y] = extractRayon(J)
 
-s = size(I);
+s = size(J);
 centreImageX = round(s(2)/2);
 centreImageY = round(s(1)/2);
 
 % noisy_img = f_addSaltPepperNoise(I, 0.05); % Ajouter le bruit
 
 % Smoothing of the image
-G = fspecial("gaussian", 25, 5);
-I_gauss = conv2(I, G, "same");
+G = fspecial("gaussian", 25, 4);
+I_gauss = conv2(J, G, "same");
 % I_gauss_SP = conv2(noisy_img, G, "same");
 
 % Definition of the masks
-Mx = [ -1 0 1 ; -1 0 1 ; -1 0 1] ;
-My = [1 1 1 ; 0 0 0 ; -1 -1 -1] ;
+Mx=[-1 0 1;-1 0 1;-1 0 1];
+My=[1 1 1;0 0 0;-1 -1 -1];
 
-% Calculate of the derivatives (convolution with the masks)
-Ix = filter2(Mx, I_gauss) / 6;
-Iy = filter2(My, I_gauss) / 6;
+Jx=filter2(-Mx,I_gauss)/6;
+Jy=filter2(-My,I_gauss)/6;
 
-% Definition of the elements to use in the formula
-Ix2 = Ix.^2;
-Iy2 = Iy.^2;
-IxIy = Ix .* Iy;
+eta = atan(Jy./Jx);
+Ggray=sqrt(Jx.*Jx + Jy.*Jy);
 
-% Creation of the edges
-Icol = sqrt(0.5 * (Ix2 + Iy2 + sqrt((Ix2 - Iy2).^2 + (2 * IxIy).^2)));
+% figure,imagesc(J),colormap(gray), title('Image grey');
+% figure,imagesc(Ggray),colormap(gray), title('Gradient grey');
+% figure,imagesc(eta),colormap(gray), title('Gradient direction');
 
-% Creation of an image to store the results of non-maxima suppression
-Icol_suppr = zeros(size(Icol));
+%%%%%%%%%% non maxima suppression
 
-for i = 2:size(Icol, 1) - 1
-    for j = 2:size(Icol, 2) - 1
-        % Conversion from radians to degree
-        currentAngle = atan2(Iy(i, j), Ix(i, j));
-        currentAngle = rad2deg(currentAngle);
-        if currentAngle < 0
-            currentAngle = currentAngle + 180;
-        end
-        currentMagnitude = Icol(i, j);
-        % Comparison with neighborhood pixels depending on the angle
-        if ((0 <= currentAngle < 22.5) || (157.5 <= currentAngle <= 180))
-            neighbor1 = Icol(i, j - 1);
-            neighbor2 = Icol(i, j + 1);
-        elseif (22.5 <= currentAngle < 67.5)
-            neighbor1 = Icol(i - 1, j + 1);
-            neighbor2 = Icol(i + 1, j - 1);
-        elseif (67.5 <= currentAngle < 112.5)
-            neighbor1 = Icol(i - 1, j);
-            neighbor2 = Icol(i + 1, j);
-        elseif (112.5 <= currentAngle < 157.5)
-            neighbor1 = Icol(i - 1, j - 1);
-            neighbor2 = Icol(i + 1, j + 1);
-        end
+[NMS] =  directionalNMS(Jx,Jy);
+Gradient_max= Ggray .* NMS;
+% figure,imagesc(NMS),colormap(gray), title('NMS');
 
-        % Non-maxima suppression
-        if (currentMagnitude >= neighbor1) && (currentMagnitude >= neighbor2)
-            Icol_suppr(i, j) = currentMagnitude;
-        end
-    end
-end
-
-% Normalisation
-Icol_suppr_n = f_normalisation(Icol_suppr) ;
+% figure,imagesc(Gradient_max), colormap(gray), title('Gradient max');
 
 % Thresholding (slightly variable value depending on the image used)
-Icol_bin = Icol_suppr_n > 0.02 ;
+Icol_suppr_n = f_normalisation(Gradient_max);
+Icol_bin = Icol_suppr_n > 0.05 ;
+% figure, imshow(Icol_bin, []);
+
 [centers1, radii1, metric1, centers2, radii2, metric2] = detectCirclesWithDynamicSensitivity(Icol_bin);
 
 % Invert the colors of the binarized image
@@ -139,7 +112,7 @@ function [centers, radii, metric] = tryFindCircles(Icol_bin, radiusRange, object
     end
 end
 
-figure,imagesc(Icol_bin),colormap(gray),title("found circles");
+% figure,imagesc(Icol_bin),colormap(gray),title("found circles");
 
 % Initialisation des listes pour conserver les cercles filtrés
 filteredCenters1 = [];
@@ -170,16 +143,42 @@ if ~isempty(centers1) && ~isempty(centers2)
 end
 
 % Après avoir trouvé tous les cercles
-if isempty(filteredCenters1) && ~isempty(centers1)
+% Vérifie si filteredCenters1 contient 2 éléments ou plus
+if size(filteredCenters1, 1) >= 2
+    % Calcule les distances des centres filtrés au centre de l'image
+    distances = sqrt((filteredCenters1(:,1) - centreImageX).^2 + (filteredCenters1(:,2) - centreImageY).^2);
+    % Sélectionne l'indice du cercle le plus proche
+    [~, closestIndex] = min(distances);
+    % Met à jour filteredCenters1 et filteredRadii1 avec le cercle le plus proche
+    filteredCenters1 = filteredCenters1(closestIndex, :);
+    filteredRadii1 = filteredRadii1(closestIndex);
+% Sinon, si filteredCenters1 est vide et centers1 n'est pas vide
+elseif isempty(filteredCenters1) && ~isempty(centers1)
+    % Calcule les distances de tous les centres dans centers1 au centre de l'image
     distances = sqrt((centers1(:,1) - centreImageX).^2 + (centers1(:,2) - centreImageY).^2);
+    % Sélectionne l'indice du cercle le plus proche
     [~, closestIndex1] = min(distances);
+    % Met à jour filteredCenters1 et filteredRadii1 avec le cercle le plus proche dans centers1
     filteredCenters1 = centers1(closestIndex1, :);
     filteredRadii1 = radii1(closestIndex1);
 end
 
-if isempty(filteredCenters2) && ~isempty(centers2)
+% Vérifie si filteredCenters2 contient 2 éléments ou plus
+if size(filteredCenters2, 1) >= 2
+    % Calcule les distances des centres filtrés au centre de l'image
+    distances = sqrt((filteredCenters2(:,1) - centreImageX).^2 + (filteredCenters2(:,2) - centreImageY).^2);
+    % Sélectionne l'indice du cercle le plus proche
+    [~, closestIndex] = min(distances);
+    % Met à jour filteredCenters2 et filteredRadii2 avec le cercle le plus proche
+    filteredCenters2 = filteredCenters2(closestIndex, :);
+    filteredRadii2 = filteredRadii2(closestIndex);
+% Sinon, si filteredCenters2 est vide et centers2 n'est pas vide
+elseif isempty(filteredCenters2) && ~isempty(centers2)
+    % Calcule les distances de tous les centres dans centers2 au centre de l'image
     distances = sqrt((centers2(:,1) - centreImageX).^2 + (centers2(:,2) - centreImageY).^2);
+    % Sélectionne l'indice du cercle le plus proche
     [~, closestIndex2] = min(distances);
+    % Met à jour filteredCenters2 et filteredRadii2 avec le cercle le plus proche dans centers2
     filteredCenters2 = centers2(closestIndex2, :);
     filteredRadii2 = radii2(closestIndex2);
 end
