@@ -35,11 +35,15 @@ for shift = -MAX_SHIFT:MAX_SHIFT
         xorCodes = xor(squeeze(codeBinary1(:,:,b)),circshift(squeeze(codeBinary2(:,:,b)),shift,2));
         andMasks = msk1 & circshift(msk2,shift,2);
         xorCodesMasked = xorCodes & andMasks;
-        scoreC(b,shift + MAX_SHIFT + 1) = sum(xorCodesMasked) / sum(andMasks);
+        if sum(andMasks) > 0
+            scoreC(b,shift + MAX_SHIFT + 1) = sum(xorCodesMasked) / sum(andMasks);
+        else
+            scoreC(b,shift + MAX_SHIFT + 1) = NaN; % Ou une autre logique de gestion des erreurs
+        end
     end
 end
 
 %% Finally, calculate the mean score for all the scores obtained for each
 %  kernel independently, and select the minimum value over all shifts
 %  compensating the eye rotation
-scoreC = min(mean(scoreC));
+scoreC = min(mean(scoreC, 'omitnan'));

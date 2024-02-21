@@ -76,7 +76,7 @@ moyenne = mean(image_rect(:));
 
 % Définition des seuils relatifs à la moyenne
 seuilInf = moyenne * 0.5; % Exemple : 50% de la moyenne pour le seuil inférieur
-seuilSup = moyenne * 1.5; % Exemple : 150% de la moyenne pour le seuil supérieur
+seuilSup = moyenne * 1.3; % Exemple : 150% de la moyenne pour le seuil supérieur
 
 % Application des seuils pour créer le masque
 for i = 1:s(1)
@@ -93,14 +93,14 @@ mask = logical(mask) ;
 nomMask = [nomSansExtension '_mask'];
 % CHANGE STORAGE PATH HERE
 % ORIGINAL STORAGE PATH
-% dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' ;
-% nomFichierConvertiMask = [nomMask '.bmp'] ;
-% cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' nomMask '.bmp'] ;
-
-% NEW STORAGE PATH
-dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB/Masks_bmp/' ;
+dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' ;
 nomFichierConvertiMask = [nomMask '.bmp'] ;
-cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB/Masks_bmp/' nomMask '.bmp'] ;
+cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' nomMask '.bmp'] ;
+
+% TEST STORAGE PATH
+% dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB/Masks_bmp/' ;
+% nomFichierConvertiMask = [nomMask '.bmp'] ;
+% cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB/Masks_bmp/' nomMask '.bmp'] ;
 
 % mask_uint8 = uint8(255 * mat2gray(mask));
 imwrite(mask, cheminAccesMask, 'bmp') ;
