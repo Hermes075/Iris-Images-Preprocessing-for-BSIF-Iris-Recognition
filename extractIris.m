@@ -24,7 +24,7 @@ function [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces,
 % ORIGINAL STOCKAGE FILE
 dossierStockage = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp' ;
 % TEST STOCKAGE FILE
-% dossierStockage = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB/DB_bmp' ;
+% dossierStockage = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/DB_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
 cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 

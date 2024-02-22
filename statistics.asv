@@ -88,8 +88,8 @@ errorGenuine = sum(scoresGenuine > 0.4) / numel(scoresGenuine) * 100;
 errorImpostor = sum(scoresImpostor < 0.4) / numel(scoresImpostor) * 100;
 
 % Calcul du pourcentage de NaN
-percentNanGenuine = nanCounterTrue / (numRowsTrue - 1) * 100;
-percentNanImpostor = nanCounterFalse / (numRowsFalse - 1) * 100;
+percentNanGenuine = nanCounterTrue / numel(scoresGenuine) * 100;
+percentNanImpostor = nanCounterFalse / numel(scoresImpostor) * 100;
 
 % Création des variables pour le tableau
 Mean = [meanGenuine; meanImpostor];

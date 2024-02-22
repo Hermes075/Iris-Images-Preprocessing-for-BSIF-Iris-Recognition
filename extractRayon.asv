@@ -61,7 +61,13 @@ Icol_suppr_n = f_normalisation(Gradient_max);
 Icol_bin = Icol_suppr_n > 0.05 ;
 % figure, imshow(Icol_bin, []);
 
-[centers1, radii1, metric1, centers2, radii2, metric2] = detectCirclesWithDynamicSensitivity(Icol_bin);
+% Création de l'élément structurant pour la fermeture morphologique
+se = strel('disk', 100);
+
+% Application de la fermeture morphologique
+Icol_closed = imclose(Icol_bin, se);
+
+[centers1, radii1, metric1, centers2, radii2, metric2] = detectCirclesWithDynamicSensitivity(Icol_closed);
 
 % Invert the colors of the binarized image
 Icol_bin_inverted = ~Icol_bin;
@@ -120,7 +126,7 @@ function [centers, radii, metric] = tryFindCircles(Icol_bin, radiusRange, object
     end
 end
 
-figure,imagesc(Icol_bin),colormap(gray),title("found circles");
+figure,imagesc(Icol_clo),colormap(gray),title("found circles");
 
 % Initialisation des listes pour conserver les cercles filtrés
 filteredCenters1 = [];
