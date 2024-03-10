@@ -93,14 +93,14 @@ mask = logical(mask) ;
 nomMask = [nomSansExtension '_mask'];
 % CHANGE STORAGE PATH HERE
 % ORIGINAL STORAGE PATH
-dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' ;
-nomFichierConvertiMask = [nomMask '.bmp'] ;
-cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' nomMask '.bmp'] ;
+% dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' ;
+% nomFichierConvertiMask = [nomMask '.bmp'] ;
+% cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' nomMask '.bmp'] ;
 
 % TEST STORAGE PATH
-% dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/Masks_bmp/' ;
-% nomFichierConvertiMask = [nomMask '.bmp'] ;
-% cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/Masks_bmp/' nomMask '.bmp'] ;
+dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/Masks_bmp/' ;
+nomFichierConvertiMask = [nomMask '.bmp'] ;
+cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/Masks_bmp/' nomMask '.bmp'] ;
 
 % mask_uint8 = uint8(255 * mat2gray(mask));
 imwrite(mask, cheminAccesMask, 'bmp') ;

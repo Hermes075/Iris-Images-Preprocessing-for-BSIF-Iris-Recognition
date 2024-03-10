@@ -8,10 +8,10 @@ close all;            % Close all figures
 
 % Define the path to your database
 % ORIGINAL DB PATH
-databasePath = 'D:/Prive/Code/BSIF-iris/WACV_2019_Czajka_etal_Stest_images/WACV_2019_Czajka_etal_Stest_images';
+% databasePath = 'D:/Prive/Code/BSIF-iris/WACV_2019_Czajka_etal_Stest_images/WACV_2019_Czajka_etal_Stest_images';
 
 % TEST DB PATH
-% databasePath = 'D:/Prive/Code/BSIF-iris/Not_working/Not_working_img2';
+databasePath = 'D:/Prive/Code/BSIF-iris/Not_working/Not_working_img2';
 filePattern = fullfile(databasePath, '*.tiff');
 tiffFiles = dir(filePattern);
 

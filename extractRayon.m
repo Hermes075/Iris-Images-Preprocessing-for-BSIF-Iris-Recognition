@@ -24,7 +24,7 @@ tolerance = 10;
 [filteredIrisCenter, filteredIrisRadii, filteredIrisMetric] = deal([], [], []);
 
 % Smoothing of the image
-G = fspecial("gaussian", 125, 3);
+G = fspecial("gaussian", 25, 7);
 I_gauss = conv2(J, G, "same");
 % I_gauss_SP = conv2(noisy_img, G, "same");
 
@@ -62,35 +62,40 @@ Gradient_max= Ggray .* NMS;
 Icol_suppr_n = f_normalisation(Gradient_max);
 Icol_bin = Icol_suppr_n > 0.05 ;
 
-[pupilCenter, pupilRadii, pupilMetric] = pupilDetectionDynamicSensitivity(Icol_bin);
-[filteredPupilCenter, filteredPupilRadii, filteredPupilMetric] = filterCircleCenters(filteredPupilCenter, filteredPupilRadii, filteredPupilMetric, centreImageX, centreImageY, tolerance);
+% Fermeture morphologique pour combler les petits trous et connecter les régions disjointes
+SE = strel('disk', 4); % Crée un élément structurant de forme disque avec un rayon de 5 pixels
+Icol_close = imclose(Icol_bin, SE); % Réalise la fermeture morphologique
 
-% Create a grid of coordinates for x and y
-[xGrid, yGrid] = meshgrid(1:size(Icol_bin, 2), 1:size(Icol_bin, 1));
+[pupilCenter, pupilRadii, pupilMetric] = pupilDetectionDynamicSensitivity(Icol_close, centreImageX, centreImageY);
+% Calculate distances between the centers of the circles and the image center
+distances = sqrt((pupilCenter(:,1) - centreImageX).^2 + (pupilCenter(:,2) - centreImageY).^2);
 
-% Condition 1: Pixels located between centreImageX - rayonPupille and centreImageX + rayonPupille
-conditionX = xGrid >= (filteredPupilCenter(1) - filteredPupilRadii) & xGrid <= (filteredPupilCenter(1) + filteredPupilRadii);
+% Find the index of the circle closest to the image center
+[~, minIndex] = min(distances);
 
-% Condition 2: Pixels located above centreImageY + rayonPupille
-conditionY = yGrid <= (filteredPupilCenter(2) + filteredPupilRadii);
+% Select the characteristics of this circle
+filteredPupilCenter = pupilCenter(minIndex, :);
+filteredPupilRadii = pupilRadii(minIndex);
+filteredPupilMetric = pupilMetric(minIndex);
 
-% Combine both conditions to identify the pixels to be blackened
-pixelsToBlacken = conditionX & conditionY;
+% Dynamic cropping of the image based on the dilatation of the pupil
+scale = round(filteredPupilRadii)/60;
+Icol_close(1 : round((filteredPupilCenter(2) - (1.3/scale)*filteredPupilRadii)),:) = 0;
+Icol_close(round((filteredPupilCenter(2) + (2/scale)*filteredPupilRadii)) : s(1),:) = 0;
+Icol_close(:,1 : round((filteredPupilCenter(1) - (3/scale)*filteredPupilRadii))) = 0;
+Icol_close(:,round((filteredPupilCenter(1) + (3/scale)*filteredPupilRadii)) : s(2)) = 0;
 
-% Update Icol_bin to blacken the selected pixels
-Icol_bin(pixelsToBlacken) = 0;
-
-[irisCenter, irisRadii, irisMetric] = irisDetectionDynamicSensitivity(Icol_bin);
-[filteredIrisCenter, filteredIrisRadii, filteredIrisMetric] = filterCircleCenters(filteredIrisCenter, filteredIrisRadii, filteredIrisMetric, centreImageX, centreImageY, tolerance);
+[irisCenter, irisRadii, irisMetric] = irisDetectionDynamicSensitivity(Icol_close, filteredPupilCenter);
+[filteredIrisCenter, filteredIrisRadii, filteredIrisMetric] = filterCircles(irisCenter, irisRadii, irisMetric, centreImageX, centreImageY, tolerance);
 
 % Invert the colors of the binarized image
-Icol_bin_inverted = ~Icol_bin;
+Icol_close_inverted = ~Icol_close;
 
 % Définir la taille de la marge (2 pixels)
 taille_marge = 5;
 
 % Obtenir les dimensions de l'image originale
-[dimy, dimx] = size(Icol_bin_inverted);
+[dimy, dimx] = size(Icol_close_inverted);
 
 % Calculer les dimensions de la nouvelle image avec la marge
 nouvelle_dimy = dimy + 2 * taille_marge;
@@ -100,111 +105,102 @@ nouvelle_dimx = dimx + 2 * taille_marge;
 image_avec_marge = zeros(nouvelle_dimy, nouvelle_dimx);
 
 % Copier l'image originale au centre de la nouvelle matrice
-image_avec_marge(taille_marge + 1:taille_marge + dimy, taille_marge + 1:taille_marge + dimx) = Icol_bin_inverted;
+image_avec_marge(taille_marge + 1:taille_marge + dimy, taille_marge + 1:taille_marge + dimx) = Icol_close_inverted;
 % figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
 
-function [pupilCenter, pupilRadii, pupilMetric] = pupilDetectionDynamicSensitivity(Icol_bin)
-    % Initialiser les paramètres de sensibilité
-    initialSensitivity = 0.859;  % Commencez avec une sensibilité plus basse
-    maxSensitivity = 1.2;     % Sensibilité maximale à ne pas dépasser
-    sensitivityStep = 0.02;    % Incrément de la sensibilité pour chaque itération
+function [pupilCenter, pupilRadii, pupilMetric] = pupilDetectionDynamicSensitivity(Icol_close, centreImageX, centreImageY)
+    sensitivity = 0.859;
+    maxSensitivity = 1;
+    sensitivityStep = 0.02;
+    radiusRange = [20 80];
+    objectPolarity = 'bright';
+    tolerance = 50;
 
-    % Détection pour le cercle iris/pupille
-    [pupilCenter, pupilRadii, pupilMetric] = tryFindCircles(Icol_bin, [20 80], 'bright', initialSensitivity, maxSensitivity, sensitivityStep);
-end
-
-function [irisCenter, irisRadii, irisMetric] = irisDetectionDynamicSensitivity(Icol_bin)
-    % Initialiser les paramètres de sensibilité
-    initialSensitivity = 0.859;  % Commencez avec une sensibilité plus basse
-    maxSensitivity = 1.2;     % Sensibilité maximale à ne pas dépasser
-    sensitivityStep = 0.02;    % Incrément de la sensibilité pour chaque itération
-
-    % Détection pour le cercle iris/pupille
-    [irisCenter, irisRadii, irisMetric] = tryFindCircles(Icol_bin, [100 160], 'bright', initialSensitivity, maxSensitivity, sensitivityStep);
-end
-
-function [centers, radii, metric] = tryFindCircles(Icol_bin, radiusRange, objectPolarity, initialSensitivity, maxSensitivity, sensitivityStep)  
-    sensitivity = initialSensitivity;
-    centers = [];
-    radii = [];
-    metric = [];
-    
-    % Tant que la sensibilité ne dépasse pas le maximum et qu'aucun cercle n'a été détecté
-    while isempty(centers) && sensitivity <= maxSensitivity
-        [centers, radii, metric] = imfindcircles(Icol_bin, radiusRange, 'ObjectPolarity', objectPolarity, 'Sensitivity', sensitivity);
-        
-        % Augmenter la sensibilité pour la prochaine itération si aucun cercle n'est trouvé
-        if isempty(centers)
+    while sensitivity <= maxSensitivity
+        [centers, radii, metric] = imfindcircles(Icol_close, radiusRange, 'ObjectPolarity', objectPolarity, 'Sensitivity', sensitivity);
+        [pupilCenter, pupilRadii, pupilMetric, found] = filterCircles(centers, radii, metric, centreImageX, centreImageY, tolerance);
+        if found
+            break;
+        else
             sensitivity = sensitivity + sensitivityStep;
         end
     end
-    
-    % Afficher un message si aucun cercle n'est détecté même à la sensibilité maximale
-    if isempty(centers)
-        fprintf('Aucun cercle trouvé même avec une sensibilité de %.2f\n', maxSensitivity);
-    else
-        fprintf('Cercles trouvés avec une sensibilité de %.2f\n', sensitivity);
+end
+
+function [irisCenter, irisRadii, irisMetric] = irisDetectionDynamicSensitivity(Icol_close, pupilCenter)
+    sensitivity = 0.859;
+    maxSensitivity = 1;
+    sensitivityStep = 0.02;
+    radiusRange = [100 180];
+    objectPolarity = 'bright';
+    tolerance = 20;
+
+    while sensitivity <= maxSensitivity
+        [centers, radii, metric] = imfindcircles(Icol_close, radiusRange, 'ObjectPolarity', objectPolarity, 'Sensitivity', sensitivity);
+        [irisCenter, irisRadii, irisMetric, found] = filterCircles(centers, radii, metric, pupilCenter(1), pupilCenter(2), tolerance);
+        if found
+            break;
+        else
+            sensitivity = sensitivity + sensitivityStep;
+        end
     end
 end
 
-figure,imagesc(Icol_bin),colormap(gray),title("found circles");
-
-function [filteredCenters, filteredRadii, filteredMetric] = filterCircleCenters(centers, radii, metric, centreImageX, centreImageY, tolerance)
-    % Initialisation des listes pour conserver les cercles filtrés
+    function [filteredCenters, filteredRadii, filteredMetric, found] = filterCircles(centers, radii, metric, centerX, centerY, tolerance)
     filteredCenters = [];
     filteredRadii = [];
     filteredMetric = [];
-    
-    % Vérification initiale pour s'assurer que les centres ne sont pas vides
+
+    found = false;
     if isempty(centers)
         return;
     end
-    
-    % Boucle à travers tous les cercles détectés pour filtrer basé sur une condition spécifique
-    % Ici, comme exemple, on utilise la proximité au centre de l'image
+
     for i = 1:size(centers, 1)
-        if abs(centers(i,1) - centreImageX) <= tolerance && abs(centers(i,2) - centreImageY) <= tolerance
-            % Ajoute les cercles correspondants aux listes filtrées
+        if abs(centers(i,1) - centerX) <= tolerance && abs(centers(i,2) - centerY) <= tolerance
             filteredCenters = [filteredCenters; centers(i,:)];
             filteredRadii = [filteredRadii; radii(i)];
             filteredMetric = [filteredMetric; metric(i)];
         end
     end
-    
-    % Filtrage supplémentaire pour choisir le cercle le plus proche du centre de l'image si nécessaire
-    if size(filteredCenters, 1) >= 2
-        distances = sqrt((filteredCenters(:,1) - centreImageX).^2 + (filteredCenters(:,2) - centreImageY).^2);
+
+    if ~isempty(filteredCenters)
+        distances = sqrt((filteredCenters(:,1) - centerX).^2 + (filteredCenters(:,2) - centerY).^2);
         [~, closestIndex] = min(distances);
         filteredCenters = filteredCenters(closestIndex, :);
         filteredRadii = filteredRadii(closestIndex);
         filteredMetric = filteredMetric(closestIndex);
-    elseif isempty(filteredCenters) && ~isempty(centers)
-        % Si aucun centre n'a été filtré mais que des centres existent, choisir le plus proche du centre de l'image
-        distances = sqrt((centers(:,1) - centreImageX).^2 + (centers(:,2) - centreImageY).^2);
-        [~, closestIndex] = min(distances);
-        filteredCenters = centers(closestIndex, :);
-        filteredRadii = radii(closestIndex);
-        filteredMetric = metric(closestIndex);
+        found = true;
     end
 end
 
+figure,imagesc(Icol_close),colormap(gray),title("found circles");
+
 hold on;
-% Vérification et affichage des cercles pour pupilFilteredCenters
-if ~isempty(pupilFilteredCenters)
-    viscircles(pupilFilteredCenters, pupilFilteredRadii, 'EdgeColor', 'b');
+% Vérification et affichage des cercles pour filteredPupilCenter
+if ~isempty(filteredPupilCenter)
+    viscircles(filteredPupilCenter, filteredPupilRadii, 'EdgeColor', 'b');
 end
 
-% Vérification et affichage des cercles pour irisFilteredCenters
-if ~isempty(irisFilteredCenters)
-    viscircles(irisFilteredCenters, irisFilteredRadii, 'EdgeColor', 'r');
+% Vérification et affichage des cercles pour filteredIrisCenter
+if ~isempty(filteredIrisCenter)
+    viscircles(filteredIrisCenter, filteredIrisRadii, 'EdgeColor', 'r');
 end
 hold off;
 
 % Diameter calculation of the iris
-centre_oeil_x = round(irisFilteredCenters(1,1));
-centre_oeil_y = round(irisFilteredCenters(1,2));
+if ~isempty(filteredIrisCenter)
+    centre_oeil_x = round(filteredIrisCenter(1));
+    centre_oeil_y = round(filteredIrisCenter(2));
+else
+    % Gestion de l'absence de détection
+    centre_oeil_x = NaN;
+    centre_oeil_y = NaN;
+    fprintf('Aucun iris détecté.\n');
+end
+
 
 % Radius calculation
-r_int = round(pupilFilteredRadii);  % Outer radius of the iris
-r_ext = round(irisFilteredRadii);  % Inner radius of the iris
+r_int = round(filteredPupilRadii);  % Outer radius of the iris
+r_ext = round(filteredIrisRadii);  % Inner radius of the iris
 end
