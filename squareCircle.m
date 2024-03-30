@@ -1,6 +1,6 @@
-% Arthur Rubio, Lucas Riviere, 11/2023
+% Arthur Rubio, 04/2024
 % "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
-% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2023, Paris, France.
+% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
 %
 % This code allows to unwrap the iris of an eye image processed by the Canny algorithm.
 % Definition of the rectangle containing the unwrapped iris
@@ -18,7 +18,6 @@
 function [image_rect, mask] = squareCircle(nomImage)
 [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces, nomSansExtension] = extractIris(nomImage);
 
-% Redefine the eye radius
 rint = r_int ; % Inner radius (pupil/iris boundary)
 rext = r_ext ; % Outer radius (iris/sclera boundary)
 
@@ -32,10 +31,10 @@ x2 = zeros(1, longueur_rectangle);
 y2 = zeros(1, longueur_rectangle);
 
 % Specification of the coordinates of the center of the eye
-centre_x = centre_oeil_x % Coordinate x of the center of the eye
-centre_y = centre_oeil_y % Coordinate y of the center of the eye
+centre_x = centre_oeil_x
+centre_y = centre_oeil_y
 
-% Initialisation of the angle vector
+% Initialisation of angle vector
 theta = linspace(0, 2*pi, longueur_rectangle);
 
 % Generation of inner and outer perimetric points
@@ -56,13 +55,11 @@ for i = 1:longueur_rectangle
     ligne_pixels = interp2(iris_extrait, x_line, y_line, 'linear') ;
     image_rect(:, i) = ligne_pixels;
 end
-
 % figure, imagesc(image_rect, []), colormap(gray), title('Unwrapped Iris') ;
 
-% New size of the image in order for the BSIF filter to work
+% Risizing of the image to make the code compatible with BSIF matching
 nouvelle_taille = [64, 512];
 
-% Usage of imresize function to resize the image
 image_rect = imresize(image_rect, nouvelle_taille);
 im_rect_uint8 = uint8(255 * mat2gray(image_rect));
 imwrite(im_rect_uint8, cheminAcces, 'bmp') ;
@@ -71,39 +68,24 @@ imwrite(im_rect_uint8, cheminAcces, 'bmp') ;
 s=size(image_rect);
 mask = zeros(s(1),s(2));
 
-% Calcul de la moyenne des valeurs de pixels
+% Applying threshold based on the average pixel value
 moyenne = mean(image_rect(:));
+seuilInf = moyenne * 0.5;
+seuilSup = moyenne * 1.3;
 
-% Définition des seuils relatifs à la moyenne
-seuilInf = moyenne * 0.5; % Exemple : 50% de la moyenne pour le seuil inférieur
-seuilSup = moyenne * 1.3; % Exemple : 150% de la moyenne pour le seuil supérieur
-
-% Application des seuils pour créer le masque
+% Mask creation
 for i = 1:s(1)
     for j = 1:s(2)
         mask(i,j) = (image_rect(i,j) > seuilInf) && (image_rect(i,j) < seuilSup);
     end
 end
-
-% Making the mask logical for the BSIF filter to work
 mask = logical(mask) ;
 % figure, imagesc(double(mask)), colormap(gray), title('Masque Iris');
 
-% Mask storage
+% Storage
 nomMask = [nomSansExtension '_mask'];
-% CHANGE STORAGE PATH HERE
-% ORIGINAL STORAGE PATH
 dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' ;
 nomFichierConvertiMask = [nomMask '.bmp'] ;
 cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' nomMask '.bmp'] ;
-
-% TEST STORAGE PATH
-% dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/Masks_bmp/' ;
-% nomFichierConvertiMask = [nomMask '.bmp'] ;
-% dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/Masks_bmp/' ;
-% nomFichierConvertiMask = [nomMask '.bmp'] ;
-% cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/Masks_bmp/' nomMask '.bmp'] ;
-
-% mask_uint8 = uint8(255 * mat2gray(mask));
 imwrite(mask, cheminAccesMask, 'bmp') ;
 end

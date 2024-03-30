@@ -26,7 +26,7 @@ tolerance = 10;
 % Smoothing of the image
 G = fspecial("gaussian", 25, 7);
 I_gauss = conv2(J, G, "same");
-I_median = medfilt2(I_gauss, [3 3]);
+I_median = medfilt2(I_gauss, [3 3]); 
 
 % Histogram normalization of the smoothed image
 I_adj = imadjust(I_median);
@@ -68,15 +68,15 @@ Icol_circular = false(size(Icol_bin));
 for i = 1:CC.NumObjects
     singleComponent = false(size(Icol_bin));
     singleComponent(CC.PixelIdxList{i}) = true;
-
+    
     % Compute the perimeter
     componentPerimeter = sum(bwperim(singleComponent, 8), 'all');
-
+    
     % Compute the circularity
     area = numPixels(i);
     circularity = (4 * pi * area) / (componentPerimeter ^ 2);
     circularities(i) = circularity;
-
+    
     % Circularity thresholding
     if circularity > circularityThreshold
         Icol_circular(CC.PixelIdxList{i}) = true;
@@ -125,77 +125,77 @@ image_avec_marge(taille_marge + 1:taille_marge + dimy, taille_marge + 1:taille_m
 % figure,imagesc(image_avec_marge),colormap(gray),title("Inverted binarized image with margin");
 
 % Function to detect dynamically the pupil
-    function [pupilCenter, pupilRadii, pupilMetric] = pupilDetectionDynamicSensitivity(Icol_close, centreImageX, centreImageY)
-        % Sensitivity starting at 0.859 and going up to 0.999
-        sensitivity = 0.859;
-        maxSensitivity = 1;
-        sensitivityStep = 0.02;
-        radiusRange = [20 80];
-        objectPolarity = 'bright';
-        % Distance (in px) from the center of the image tolerated
-        tolerance = 50;
+function [pupilCenter, pupilRadii, pupilMetric] = pupilDetectionDynamicSensitivity(Icol_close, centreImageX, centreImageY)
+    % Sensitivity starting at 0.859 and going up to 0.999
+    sensitivity = 0.859;
+    maxSensitivity = 1;
+    sensitivityStep = 0.02;
+    radiusRange = [20 80];
+    objectPolarity = 'bright';
+    % Distance (in px) from the center of the image tolerated
+    tolerance = 50;
 
-        while sensitivity <= maxSensitivity
-            % Detect circles close to the center of the image with the given sensibility
-            [centers, radii, metric] = imfindcircles(Icol_close, radiusRange, 'ObjectPolarity', objectPolarity, 'Sensitivity', sensitivity);
-            [pupilCenter, pupilRadii, pupilMetric, found] = filterCircles(centers, radii, metric, centreImageX, centreImageY, tolerance);
-            if found
-                break;
-            else
-                sensitivity = sensitivity + sensitivityStep;
-            end
+    while sensitivity <= maxSensitivity
+        % Detect circles close to the center of the image with the given sensibility
+        [centers, radii, metric] = imfindcircles(Icol_close, radiusRange, 'ObjectPolarity', objectPolarity, 'Sensitivity', sensitivity);
+        [pupilCenter, pupilRadii, pupilMetric, found] = filterCircles(centers, radii, metric, centreImageX, centreImageY, tolerance);
+        if found
+            break;
+        else
+            sensitivity = sensitivity + sensitivityStep;
         end
     end
+end
 
 % Function to detect dynamically the pupil
-    function [irisCenter, irisRadii, irisMetric] = irisDetectionDynamicSensitivity(Icol_close, pupilCenter)
-        sensitivity = 0.859;
-        maxSensitivity = 1;
-        sensitivityStep = 0.02;
-        radiusRange = [100 180];
-        objectPolarity = 'bright';
-        % Distance (in px) from the center of the pupil tolerated
-        tolerance = 20;
+function [irisCenter, irisRadii, irisMetric] = irisDetectionDynamicSensitivity(Icol_close, pupilCenter)
+    sensitivity = 0.859;
+    maxSensitivity = 1;
+    sensitivityStep = 0.02;
+    radiusRange = [100 180];
+    objectPolarity = 'bright';
+    % Distance (in px) from the center of the pupil tolerated
+    tolerance = 20;
 
-        % Increase the sensitivity if a circle is not found
-        while sensitivity <= maxSensitivity
-            [centers, radii, metric] = imfindcircles(Icol_close, radiusRange, 'ObjectPolarity', objectPolarity, 'Sensitivity', sensitivity);
-            [irisCenter, irisRadii, irisMetric, found] = filterCircles(centers, radii, metric, pupilCenter(1), pupilCenter(2), tolerance);
-            if found
-                break;
-            else
-                sensitivity = sensitivity + sensitivityStep;
-            end
+    % Increase the sensitivity if a circle is not found
+    while sensitivity <= maxSensitivity
+        [centers, radii, metric] = imfindcircles(Icol_close, radiusRange, 'ObjectPolarity', objectPolarity, 'Sensitivity', sensitivity);
+        [irisCenter, irisRadii, irisMetric, found] = filterCircles(centers, radii, metric, pupilCenter(1), pupilCenter(2), tolerance);
+        if found
+            break;
+        else
+            sensitivity = sensitivity + sensitivityStep;
+        end
+    end
+end
+
+    % Filter the circles if multiples are detected
+    function [filteredCenters, filteredRadii, filteredMetric, found] = filterCircles(centers, radii, metric, centerX, centerY, tolerance)
+    filteredCenters = [];
+    filteredRadii = [];
+    filteredMetric = [];
+
+    found = false;
+    if isempty(centers)
+        return;
+    end
+
+    for i = 1:size(centers, 1)
+        if abs(centers(i,1) - centerX) <= tolerance && abs(centers(i,2) - centerY) <= tolerance
+            filteredCenters = [filteredCenters; centers(i,:)];
+            filteredRadii = [filteredRadii; radii(i)];
+            filteredMetric = [filteredMetric; metric(i)];
         end
     end
 
-% Filter the circles if multiples are detected
-    function [filteredCenters, filteredRadii, filteredMetric, found] = filterCircles(centers, radii, metric, centerX, centerY, tolerance)
-        filteredCenters = [];
-        filteredRadii = [];
-        filteredMetric = [];
-
-        found = false;
-        if isempty(centers)
-            return;
-        end
-
-        for i = 1:size(centers, 1)
-            if abs(centers(i,1) - centerX) <= tolerance && abs(centers(i,2) - centerY) <= tolerance
-                filteredCenters = [filteredCenters; centers(i,:)];
-                filteredRadii = [filteredRadii; radii(i)];
-                filteredMetric = [filteredMetric; metric(i)];
-            end
-        end
-
-        if ~isempty(filteredCenters)
-            distances = sqrt((filteredCenters(:,1) - centerX).^2 + (filteredCenters(:,2) - centerY).^2);
-            [~, closestIndex] = min(distances);
-            filteredCenters = filteredCenters(closestIndex, :);
-            filteredRadii = filteredRadii(closestIndex);
-            filteredMetric = filteredMetric(closestIndex);
-            found = true;
-        end
+    if ~isempty(filteredCenters)
+        distances = sqrt((filteredCenters(:,1) - centerX).^2 + (filteredCenters(:,2) - centerY).^2);
+        [~, closestIndex] = min(distances);
+        filteredCenters = filteredCenters(closestIndex, :);
+        filteredRadii = filteredRadii(closestIndex);
+        filteredMetric = filteredMetric(closestIndex);
+        found = true;
+    end
     end
 % figure,imagesc(Icol_close),colormap(gray),title("found circles");
 
@@ -214,7 +214,7 @@ centre_oeil_y = round(filteredPupilCenter(2));
 
 % Diameter calculation of the iris
 if isempty(filteredIrisCenter)
-    % If the iris is not detected, generate an iris circle with a radius proportionate to the degree of pupil dilation
+    % If the iris is not detected, take an iris circle with a radii related to how dilated the pupil is.
     fprintf('No iris detected.\n');
     filteredIrisRadii = filteredPupilRadii * (2.3/scale);
 end

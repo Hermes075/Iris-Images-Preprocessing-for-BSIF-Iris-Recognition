@@ -2,31 +2,38 @@
 % "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
 % Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
 %
+% This code allows to show statistics to see if the unwrapping of the
+% database went well or not.
+% To check this, it uses two Excels containing pairs of matching
+% (GENUINE.csv) or non-matching irises (IMPOSTOR.csv) and test if the
+% matching index is concording.
+% The two Excel files comes from the paper "Domain-Specific Human-Inspired 
+% Binarized Statistical Image Features for Iris Recognition", published in
+% the WACV 2019 and written by Adam Czajka, Daniel Moreira, Kevin W. Bowyer
+% and Patrick J. Flynn.
+
 % This script evaluates the effectiveness of the iris unwrapping process by
-% analyzing statistical metrics. It utilizes two CSV files, GENUINE.csv for
-% pairs of genuine (matching) iris images and IMPOSTOR.csv for pairs of
-% impostor (non-matching) iris images, to verify the consistency of matching
-% indices post-unwrapping and assess the accuracy of iris recognition algorithms.
-% The methodology for generating these CSV files is based on the approach
-% outlined in the paper "Domain-Specific Human-Inspired Binarized Statistical
-% Image Features for Iris Recognition", presented at WACV 2019 by Adam Czajka,
-% Daniel Moreira, Kevin W. Bowyer, and Patrick J. Flynn.
-% This evaluation helps in determining the reliability of the unwrapping 
-% process in preserving the distinctive features necessary for accurate iris recognition.
+% analyzing statistical metrics. 
+% It utilizes two CSV files, GENUINE.csv for pairs of genuine (matching) iris images and IMPOSTOR.csv for pairs of impostor (non-matching) iris images, 
+% to verify the consistency of matching indices post-unwrapping and assess the accuracy of iris recognition algorithms.
+% The methodology for generating these CSV files is based on the approach outlined in the paper 
+% "Domain-Specific Human-Inspired Binarized Statistical Image Features for Iris Recognition", 
+% presented at WACV 2019 by Adam Czajka, Daniel Moreira, Kevin W. Bowyer, and Patrick J. Flynn. 
+% This evaluation helps in determining the reliability of the unwrapping process in preserving the distinctive features necessary for accurate iris recognition.
 %
-% Input : l (size of the BSIF filter)
+% Input : l (size of the BSIF filter) 
 %         n (number of kernels in a set)
 %         filters (path to MATLAB file containing the BSIF filters)
 %         fileCSVTrue (path to CSV file containing pairs of genuine images)
 %         fileCSVFalse (path to CSV file containing pairs of impostor images)
 % Output : console (display of the matching scores for each comparison)
 %          iris_rect_mask.bmp (mask of the unwrapped iris)
-%          StatsTable (summary table containing mean, standard deviation,
+%          StatsTable (summary table containing mean, standard deviation, 
 %          variance and error% for genuine and impostor comparisons)
 %          graph (showing distribution of matching scores)
 
-clc;
-clear all;
+clc;                
+clear all;            
 close all;
 
 %% Load the selected domain-specific filter set
