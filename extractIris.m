@@ -22,9 +22,9 @@ function [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces,
 [chemin, nomSansExtension] = fileparts(nomImage) ;
 % CHANGE STORAGE FOLDER HERE
 % ORIGINAL STOCKAGE FILE
-% dossierStockage = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp' ;
+dossierStockage = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp' ;
 % TEST STOCKAGE FILE
-dossierStockage = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/DB_bmp' ;
+% dossierStockage = 'D:/Prive/Code/BSIF-iris/Not_working/Unwrap_DB2/DB_bmp' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
 cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 
@@ -40,7 +40,7 @@ I = im2double(I) ;
 % figure, imagesc(I), title('Original image'), colormap gray ;
 
 % Cropping of the image to keep only the eye
-side_length = 2 * r_ext + 50; % Adjust the margin if necessary
+side_length = 2 * r_ext + 150; % Adjust the margin if necessary
 
 % Calculate the cropping coordinates
 x_min = max(1, round(centre_oeil_x - side_length / 2));

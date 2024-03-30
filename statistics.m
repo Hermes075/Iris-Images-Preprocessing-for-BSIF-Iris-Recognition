@@ -33,12 +33,12 @@ for i = 2:numRowsTrue
     % Remove the .tiff extension from the file names
     cellTrue1 = erase(cellTrue1, ".tiff");
     cellTrue2 = erase(cellTrue2, ".tiff");
-    imTrue1 = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp/' + cellTrue1 + '.bmp']);
-    imTrue2 = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp/' + cellTrue2 + '.bmp']);
+    imTrue1 = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp/' + cellTrue1 + '.bmp']) + eps;
+    imTrue2 = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp/' + cellTrue2 + '.bmp']) + eps;
     codesTrue1(:,:,:,i) = extractCode(imTrue1,ICAtextureFilters);
     codesTrue2(:,:,:,i) = extractCode(imTrue2,ICAtextureFilters);
-    masksTrue1(:,:,i) = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' + cellTrue1 + '_mask.bmp']);
-    masksTrue2(:,:,i) = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' + cellTrue2 + '_mask.bmp']);
+    masksTrue1(:,:,i) = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' + cellTrue1 + '_mask.bmp']) + eps;
+    masksTrue2(:,:,i) = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' + cellTrue2 + '_mask.bmp']) + eps;
 
     scoreG = matchCodes(codesTrue1(:,:,:,i),codesTrue2(:,:,:,i),masksTrue1(:,:,i),masksTrue2(:,:,i),l);
     disp(['genuine comparison score = ' num2str(scoreG)])
@@ -57,12 +57,12 @@ for i = 2:numRowsFalse
     % Remove the .tiff extension from the file names
     cellFalse1 = erase(cellFalse1, ".tiff");
     cellFalse2 = erase(cellFalse2, ".tiff");
-    imFalse1 = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp/' + cellFalse1 + '.bmp']);
-    imFalse2 = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp/' + cellFalse2 + '.bmp']);
+    imFalse1 = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp/' + cellFalse1 + '.bmp']) + eps;
+    imFalse2 = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp/' + cellFalse2 + '.bmp']) + eps;
     codesFalse1(:,:,:,i) = extractCode(imFalse1,ICAtextureFilters);
     codesFalse2(:,:,:,i) = extractCode(imFalse2,ICAtextureFilters);
-    masksFalse1(:,:,i) = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' + cellFalse1 + '_mask.bmp']);
-    masksFalse2(:,:,i) = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' + cellFalse2 + '_mask.bmp']);
+    masksFalse1(:,:,i) = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' + cellFalse1 + '_mask.bmp']) + eps;
+    masksFalse2(:,:,i) = imread(['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' + cellFalse2 + '_mask.bmp']) + eps;
 
     scoreI = matchCodes(codesFalse1(:,:,:,i),codesFalse2(:,:,:,i),masksFalse1(:,:,i),masksFalse2(:,:,i),l);
     disp(['impostor comparison score = ' num2str(scoreI)])
@@ -84,8 +84,8 @@ stdDevImpostor = std(scoresImpostor);
 varianceImpostor = var(scoresImpostor);
 
 % Calcul de l'erreur en % pour les scores genuine et impostor
-errorGenuine = sum(scoresGenuine > 0.4) / numel(scoresGenuine) * 100;
-errorImpostor = sum(scoresImpostor < 0.4) / numel(scoresImpostor) * 100;
+errorGenuine = sum(scoresGenuine > 0.3875) / numel(scoresGenuine) * 100;
+errorImpostor = sum(scoresImpostor < 0.3875) / numel(scoresImpostor) * 100;
 
 % Calcul du pourcentage de NaN
 percentNanGenuine = nanCounterTrue / (numRowsTrue - 1) * 100;

@@ -28,6 +28,14 @@ G = fspecial("gaussian", 25, 7);
 I_gauss = conv2(J, G, "same");
 % I_gauss_SP = conv2(noisy_img, G, "same");
 
+% Applying median filtering to the smoothed image to reduce noise while preserving edges
+I_median = medfilt2(I_gauss, [3 3]);  % Utilisation d'une fenêtre de 3x3 pour le filtrage médian
+
+% Histogram normalization of the smoothed image
+% I_eq = histeq(I_gauss);
+% Histogram adjustment of the smoothed image
+I_adj = imadjust(I_median);
+
 % Definition of the masks
 % SOBEL MASKS
 Mx = [-1 0 1; -2 0 2; -1 0 1];
@@ -36,8 +44,8 @@ My = [1 2 1; 0 0 0; -1 -2 -1];
 % My=[1 1 1;0 0 0;-1 -1 -1];
 
 % Application des masques de Sobel
-Jx = filter2(Mx, I_gauss);
-Jy = filter2(My, I_gauss);
+Jx = filter2(Mx, I_adj);
+Jy = filter2(My, I_adj);
 % Jx=filter2(-Mx,I_gauss)/6;
 % Jy=filter2(-My,I_gauss)/6;
 
@@ -60,11 +68,53 @@ Gradient_max= Ggray .* NMS;
 
 % Thresholding (slightly variable value depending on the image used)
 Icol_suppr_n = f_normalisation(Gradient_max);
-Icol_bin = Icol_suppr_n > 0.05 ;
+level = adaptthresh(Icol_suppr_n, 'NeighborhoodSize', [25 25], 'ForegroundPolarity', 'dark');
+level = level + 0.03; % Augmenter le seuil de 0.3
+Icol_bin = imbinarize(Icol_suppr_n, level);
+% Icol_bin = Icol_suppr_n > 0.05 ;
+
+% Seuil de circularité
+circularityThreshold = 0.01; % Vous pouvez ajuster cette valeur
+
+% Analyse des composantes connectées
+CC = bwconncomp(Icol_bin);
+
+% Calculer le nombre de pixels pour chaque composante
+numPixels = cellfun(@numel, CC.PixelIdxList);
+
+% Initialiser un vecteur pour les circularités
+circularities = zeros(CC.NumObjects, 1);
+
+% Préparation d'une image pour marquer les composantes circulaires
+Icol_circular = false(size(Icol_bin));
+
+% Calculer la circularité pour chaque composante
+for i = 1:CC.NumObjects
+    % Extraire la composante binaire individuelle
+    singleComponent = false(size(Icol_bin));
+    singleComponent(CC.PixelIdxList{i}) = true;
+    
+    % Calculer le périmètre de la composante
+    componentPerimeter = sum(bwperim(singleComponent, 8), 'all');
+    
+    % Calculer la circularité de la composante
+    area = numPixels(i);
+    circularity = (4 * pi * area) / (componentPerimeter ^ 2);
+    circularities(i) = circularity;
+    
+    % Appliquer le seuil de circularité directement
+    if circularity > circularityThreshold
+        Icol_circular(CC.PixelIdxList{i}) = true;
+    end
+end
 
 % Fermeture morphologique pour combler les petits trous et connecter les régions disjointes
-SE = strel('disk', 4); % Crée un élément structurant de forme disque avec un rayon de 5 pixels
-Icol_close = imclose(Icol_bin, SE); % Réalise la fermeture morphologique
+SE1 = strel('disk', 4); % Crée un élément structurant de forme disque avec un rayon de 2 pixels
+% Icol_close = imclose(Icol_bin, SE1); % Réalise la fermeture morphologique
+Icol_close = imclose(Icol_circular, SE1); % Réalise la fermeture morphologique
+% Icol_close2 = bwmorph(Icol_close1, "skeleton", Inf); % Réalise la fermeture morphologique
+% SE2 = strel('line', 5, 0); % Crée un élément structurant de forme disque avec un rayon de 2 pixels
+% Icol_close = imdilate(Icol_close2, SE2); % Réalise la fermeture morphologique
 
 [pupilCenter, pupilRadii, pupilMetric] = pupilDetectionDynamicSensitivity(Icol_close, centreImageX, centreImageY);
 % Calculate distances between the centers of the circles and the image center
@@ -174,7 +224,7 @@ end
     end
 end
 
-figure,imagesc(Icol_close),colormap(gray),title("found circles");
+% figure,imagesc(Icol_close),colormap(gray),title("found circles");
 
 hold on;
 % Vérification et affichage des cercles pour filteredPupilCenter
@@ -188,17 +238,15 @@ if ~isempty(filteredIrisCenter)
 end
 hold off;
 
-% Diameter calculation of the iris
-if ~isempty(filteredIrisCenter)
-    centre_oeil_x = round(filteredIrisCenter(1));
-    centre_oeil_y = round(filteredIrisCenter(2));
-else
-    % Gestion de l'absence de détection
-    centre_oeil_x = NaN;
-    centre_oeil_y = NaN;
-    fprintf('Aucun iris détecté.\n');
-end
+centre_oeil_x = round(filteredPupilCenter(1));
+centre_oeil_y = round(filteredPupilCenter(2));
 
+% Diameter calculation of the iris
+if isempty(filteredIrisCenter)
+    % Gestion de l'absence de détection
+    fprintf('Aucun iris détecté.\n');
+    filteredIrisRadii = filteredPupilRadii * (2.3/scale);
+end
 
 % Radius calculation
 r_int = round(filteredPupilRadii);  % Outer radius of the iris
