@@ -1,6 +1,7 @@
 % Arthur Rubio, 04/2024
-% "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
-% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
+% GNU GENERAL PUBLIC LICENSE
+% "Preprocessing of Iris Images for BSIF-Based Biometric Systems: Binary 
+% detected edges and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
 %
 % This code allows to unwrap the iris of an eye image processed by the Canny algorithm.
 % Definition of the rectangle containing the unwrapped iris
@@ -84,8 +85,8 @@ mask = logical(mask) ;
 
 % Storage
 nomMask = [nomSansExtension '_mask'];
-dossierStockageMask = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' ;
+dossierStockageMask = './DB_test/Masks_bmp/' ;
 nomFichierConvertiMask = [nomMask '.bmp'] ;
-cheminAccesMask = ['D:/Prive/Code/BSIF-iris/Unwrapped_DB/Masks_bmp/' nomMask '.bmp'] ;
+cheminAccesMask = ['./DB_test/Masks_bmp/' nomMask '.bmp'] ;
 imwrite(mask, cheminAccesMask, 'bmp') ;
 end

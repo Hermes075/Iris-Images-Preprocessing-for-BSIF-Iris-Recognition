@@ -1,6 +1,7 @@
 % Arthur Rubio, 04/2024
-% "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
-% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
+% GNU GENERAL PUBLIC LICENSE
+% "Preprocessing of Iris Images for BSIF-Based Biometric Systems: Binary 
+% detected edges and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
 %
 % This code determines the inner and outer radius of the iris using edge detection
 % The edge detection is performed using the Canny method

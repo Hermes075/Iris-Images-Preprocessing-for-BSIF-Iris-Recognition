@@ -1,3 +1,8 @@
+% Baptiste Magnier, Arthur Rubio, 04/2024
+% GNU GENERAL PUBLIC LICENSE
+% "Preprocessing of Iris Images for BSIF-Based Biometric Systems: Binary 
+% detected edges and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
+
 function [output1,output2] =  directionalNMS(fx,fy)
 
 % Function Directional Non-Maximum Suppression

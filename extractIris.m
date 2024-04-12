@@ -1,6 +1,7 @@
 % Arthur Rubio, 04/2024
-% "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
-% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
+% GNU GENERAL PUBLIC LICENSE
+% "Preprocessing of Iris Images for BSIF-Based Biometric Systems: Binary 
+% detected edges and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
 %
 % This code allows to extract the iris from an eye image using the Canny method
 % Creation of a folder to store the processed images
@@ -20,7 +21,7 @@ function [iris_extrait, r_int, r_ext, centre_oeil_x, centre_oeil_y, cheminAcces,
 
 % Folder to store the processed images
 [chemin, nomSansExtension] = fileparts(nomImage) ;
-dossierStockage = 'D:/Prive/Code/BSIF-iris/Unwrapped_DB/DB_bmp' ;
+dossierStockage = './DB_test/DB_bmp/' ;
 nomFichierConverti = [nomSansExtension '.bmp'] ;
 cheminAcces = fullfile(dossierStockage, nomFichierConverti) ;
 

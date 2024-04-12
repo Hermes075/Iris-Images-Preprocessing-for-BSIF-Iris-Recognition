@@ -1,6 +1,7 @@
-% Arthur Rubio, Lucas Riviere, 11/2023
-% "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
-% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2023, Paris, France.
+% Arthur Rubio, 04/2024
+% GNU GENERAL PUBLIC LICENSE
+% "Preprocessing of Iris Images for BSIF-Based Biometric Systems: Binary 
+% detected edges and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
 %
 % This code normalizes the image between 0 and 1
 %

@@ -1,6 +1,7 @@
 % Arthur Rubio, 04/2024
-% "Preprocessing of Iris Images for BSIF-Based Biometric Systems:
-% Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
+% GNU GENERAL PUBLIC LICENSE
+% "Preprocessing of Iris Images for BSIF-Based Biometric Systems: Binary 
+% detected edges and Iris Unwrapping", IPOL (Image Processing On Line), 2024, Paris, France.
 %
 % This script executes the unwrapping process for a database of iris images,
 % which was given in the paper "Domain-Specific Human-Inspired Binarized
@@ -19,7 +20,7 @@ close all;
 % pkg load image;       % Load image package (only for Octave)
 
 % Local database path
-databasePath = 'D:/Prive/Code/BSIF-iris/WACV_2019_Czajka_etal_Stest_images/WACV_2019_Czajka_etal_Stest_images';
+databasePath = './DB_test/DB_tiff';
 filePattern = fullfile(databasePath, '*.tiff');
 tiffFiles = dir(filePattern);
 

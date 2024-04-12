@@ -3,25 +3,21 @@
 *Arthur Rubio, Lucas Rivière, "Preprocessing of Iris Images for BSIF-Based Biometric Systems: Canny Algorithm and Iris Unwrapping", IPOL (Image Processing On Line) 2023, Paris, France*
 
 ## Project Description
-This project is divided into two main modules. The first module focuses on processing standard iris images, employing techniques like edge detection, normalization, and iris unwrapping. Key scripts in this module include `extractRayon.m`, `extractIris.m` and `squareCircle.m`. The second module is dedicated to iris recognition using a BSIF model, with scripts like `example.m`, `extractCode.m`, and `matchCodes.m` providing a similarity score between two iris images. If the score is high (over 0.3), the two irises does not belong to the same person. On the other hand, if the score is under 0.3, the irises belong to the same individual.
+This project is divided into two main modules. The first module focuses on processing standard iris images, employing techniques like edge detection, normalization, and iris unwrapping using dynamic circle detection with the Hough Transform. Key scripts in this module include `extractRayon.m`, `extractIris.m` and `squareCircle.m`, which are called by `databaseUnwrapping.m`, which role is to . The second module is dedicated to iris recognition using a BSIF model, with scripts like `extractCode.m`, and `matchCodes.m` providing a similarity score between two iris images. Those scripts are used by `statistics.m` to calculate the comparison score and show the score distribution. If the score is high (over 0.385), the two irises does not belong to the same person. On the other hand, if the score is under 0.385, the irises belong to the same individual.
 
 ## Installation
 To set up the project, install the MATLAB Image Processing Toolbox using the command `pkg load image`. No additional installations are required.
 
 ## Usage
 ### Preprocessing Iris Images
-Run `squareCircle.m` after specifying the target image in line 25 of `extractIris.m`. This process includes steps like radius extraction and iris normalization.
+Run `databaseUnwrapping.m` to check the unwrapping demo on 5 images of the GFI dataset. The demo dataset is located in the DB_test/DB_tiff folder. You can see the unwrapping in the DB_test/DB_bmp folder, and the mask creation in DB_test/Masks_bmp.
 
 ### Iris Recognition
-To compare iris images, execute `example.m`. Edit lines 35 & 39 to specify the images you want to compare. This module will generate a similarity score, indicating whether the irises belong to the same person or different individuals.
+To compare iris images and check if they belong to the same individual, execute `statistics.m`. This code will show each comparison scores for genuine (same) and impostor (different) iris pairs, based on the `.csv` file mentionning the pairs of iris belonging (or not) to the same person. You can then see the start of the score distribution.
 The code is based on the work of 4 professors in the University of Notre-Dame. See below for more details.
 
-## Areas for Improvement
-1. Enhancing the `f_centre` function for more accurate iris centering.
-2. Implementing adaptive thresholding based on image lighting conditions for more effective segmentation and custom mask creation.
-
 ## Contributions
-Contributions are welcome, especially in the areas of improvement mentioned above! Feel free to fork the repository, make your changes, and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Feel free to fork the repository, make your changes, and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
 
 ## Contact
 For questions or feedback, please contact me at [arthurrubio0@gmail.com](mailto:arthurrubio0@gmail.com).
